@@ -5,17 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hangman_basic;
-internal class Player
+public class Player
 {
     public string PlayerName { get; private set; }
     public int Score { get; set; }
-    public List<char> guessedLetters = new List<char>();
+    public List<char> GuessedLetters = new List<char>();
     public Player(string name)
     {
         PlayerName = name;
-        guessedLetters = new List<char>();  
+        GuessedLetters = new List<char>();  
         Score = 0;
-
+    }
+    public void AskForUsersName()
+    {
+        Console.WriteLine("Enter your name:");
+        string input = Console.ReadLine()!;
+        if (input.Length >= 2)
+          PlayerName = input;
+        else
+        {
+            Console.WriteLine("Your name was too short. Please enter a valid name.");
+            AskForUsersName();
+        }
     }
 
 

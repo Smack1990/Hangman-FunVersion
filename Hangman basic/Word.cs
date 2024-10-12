@@ -8,12 +8,12 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Hangman_basic;
-internal class Words
+public class Word
 {
     const string JsonWords = @"MyWords.json"; 
     public List<string> WordList { get; set; }
 
-    public Words()
+    public Word()
     {
         WordList = new List<string>();
         ReadJson(); 
