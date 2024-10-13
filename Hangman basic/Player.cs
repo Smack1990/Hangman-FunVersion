@@ -18,13 +18,17 @@ public class Player
     }
     public void AskForUsersName()
     {
-        Console.WriteLine("Enter your name:");
-        string input = Console.ReadLine()!;
+        int width = Console.WindowWidth / 2 - 10;
+        GameUX gameUX = new GameUX();
+        Console.SetCursorPosition(width, Console.CursorTop); Console.Write("Enter your name:");
+
+        Console.SetCursorPosition(width + 16, Console.CursorTop); string input = Console.ReadLine()!;
         if (input.Length >= 2)
           PlayerName = input;
         else
         {
-            Console.WriteLine("Your name was too short. Please enter a valid name.");
+            Console.Clear();
+            gameUX.Centered("Your name was too short. Please enter a valid name.\n");
             AskForUsersName();
         }
     }
