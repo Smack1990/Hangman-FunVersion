@@ -119,6 +119,7 @@ public class GameLogic
     private void GameWon()
     {
         Console.Clear(); // Spelet vunnet
+        Console.SetCursorPosition(S_windwidth, S_windHight - 10);
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHight - 3);
         Console.ForegroundColor = ConsoleColor.Green;
@@ -136,7 +137,7 @@ public class GameLogic
         Console.ForegroundColor = ConsoleColor.Red; gameUX.Centered($"You've been hanged."); Console.ResetColor();
         gameUX.Centered($"The correct word was [{S_correctWord}]"); Task.Delay(4000).Wait();
         Console.Clear();
-        
+
         gameUX.HangmanLogoTop();
         Console.SetCursorPosition(S_windwidth, S_windHight + 8);
 
@@ -189,11 +190,11 @@ public class GameLogic
             char letter = char.ToUpper(Console.ReadKey(true).KeyChar);
             if (GameUX.Keyboard.Contains(letter))
             {
-                if (letter == ' ') 
+                if (letter == ' ')
                 {
-                    return '_'; 
+                    return '_';
                 }
-                return letter; 
+                return letter;
             }
             else
             {
@@ -238,7 +239,7 @@ public class GameLogic
     }  // Check if letter is correct
     private void EndGame()
     {
-        Console.SetCursorPosition(S_windwidth, S_windHight ); Console.WriteLine();
+        Console.SetCursorPosition(S_windwidth, S_windHight); Console.WriteLine();
         //gameUX.Centered($"Thanks for playing {S_player!.PlayerName}");
         gameUX.Centered($"Total amount of guesses: {S_player.GuessedLetters.Count}");
         gameUX.Centered($"You made: {S_incorrectGuesses} incorrect guesses");
@@ -262,7 +263,7 @@ public class GameLogic
                 break;
             default:
 
-                
+
                 RestartGame();
                 break;
         }
@@ -274,7 +275,7 @@ public class GameLogic
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHight - 6);
         gameUX.Centered("In this game you will try to guess the correct word");
-        gameUX.Centered("You will earn two points for every correct guessed letter"); 
+        gameUX.Centered("You will earn two points for every correct guessed letter");
         gameUX.Centered("and you will lose one point for every incorrect one.");
         gameUX.Centered("Try to get as many points as possible by thinking through your decision");
         Console.WriteLine();
@@ -589,13 +590,3 @@ public class GameLogic
 
 
 }
-
-
-
-
-
-
-
-
-
-
