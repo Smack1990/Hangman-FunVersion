@@ -114,7 +114,7 @@ public class GameUX
             }
             else if (key == '_') 
             {
-                Console.Write("[Space] "); 
+                Console.Write("[Space]"); 
             }
             else
             {

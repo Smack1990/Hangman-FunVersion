@@ -106,7 +106,9 @@ public class GameLogic
                     S_incorrectGuesses++;
                     PrintingHangman(S_incorrectGuesses);
                 }
+
             }
+
             if (S_incorrectGuesses > 9) // Spelet förlorat
             {
                 Hanged();
@@ -178,9 +180,10 @@ public class GameLogic
     private char AskForLetter()
     {
         string text = "Guess a Letter by pressing a key";
-        string textInvalid = "Invalid input! Please choose a letter from the keyboard.";
+        string textInvalid = "Please choose a remaining letter from the keyboard layout.";
         int S_windwidth = Console.WindowWidth / 2 - text.Length / 2;
         int windwidth2 = Console.WindowWidth / 2 - textInvalid.Length / 2;
+        
         while (true) // Loop until a valid letter is entered
         {
             Console.SetCursorPosition(S_windwidth, S_windHight + 6);
@@ -194,34 +197,43 @@ public class GameLogic
                 {
                     return '_';
                 }
-                return letter;
             }
-            else
+            if (S_player != null && S_player.GuessedLetters.Contains(letter))
             {
-                Console.SetCursorPosition(windwidth2, S_windHight + -3);
+                Console.WriteLine("Already guessed that.");
+            }
+            else if (!GameUX.Keyboard.Contains(letter))
+            {
+                Console.SetCursorPosition(windwidth2, S_windHight - 3);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(textInvalid);
                 Console.ResetColor();
+                continue;
             }
+            return letter;
         }
+        
     } // ask for input letter
     public static bool CheckLetter(char guessedLetter)
     {
+        
+    
         guessedLetter = char.ToUpper(guessedLetter);
 
         if (S_player!.GuessedLetters.Contains(guessedLetter))
             return false;
         S_player.GuessedLetters.Add(guessedLetter);
         bool found = false;
-
         for (int i = 0; i < S_correctWord!.Length; i++)
         {
             if (guessedLetter == char.ToUpper(S_correctWord[i]))
             {
+
                 S_letters![i] = S_correctWord[i];
                 found = true;
             }
         }
+
         //Scorehandler. Increases the amount of points with 2 if the letter is correct and decreases with 1 if it's wrong.
         if (found)
         {
@@ -233,8 +245,8 @@ public class GameLogic
             int pointsDown = 1;
             S_player.Score = Math.Max(0, S_player.Score - pointsDown);
         }
-
         gameUX.UpdateKeyboard(guessedLetter);
+
         return found;
     }  // Check if letter is correct
     private void EndGame()
