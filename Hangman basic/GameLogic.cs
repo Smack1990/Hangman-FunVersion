@@ -18,9 +18,9 @@ public class GameLogic
     private static Player? S_player;
     private static int S_incorrectGuesses;
     private static GameUX gameUX = new GameUX();
-    static int S_windHight = Console.WindowHeight / 2;
-    private static string? S_clue;
+    private static int S_windHeight = Console.WindowHeight / 2;
     private static int S_windwidth = (Console.WindowWidth / 2);
+    private static string? S_clue;
     private static bool S_isModerate = false;
 
 
@@ -48,7 +48,7 @@ public class GameLogic
                 Console.Clear();
                 //Console.SetCursorPosition(S_windwidth, S_windHight + 10);
                 gameUX.HangmanLogo();
-                Console.SetCursorPosition(S_windwidth, S_windHight - 1);
+                Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
 
                 gameUX.Centered("Enter a word to the dictionary");
                 Console.SetCursorPosition(S_windwidth, Console.CursorTop);
@@ -66,35 +66,35 @@ public class GameLogic
         S_player.AskForUsersName();
         string alreadyGuessed = string.Empty;
         char guessedLetter;
-        int width = (Console.WindowWidth / 2 - alreadyGuessed.Length / 2);
+        int width = Console.WindowWidth / 2 - alreadyGuessed.Length / 2;
+        int height = Console.WindowHeight / 2;
         string text = "                      ";
         int rightmostPosition = Console.WindowWidth - text.Length;
         do
         {
             Console.Clear();
-            Console.SetCursorPosition(S_windwidth, S_windHight + 10);
+;
+            Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
             gameUX.HangmanLogo();
             Console.SetCursorPosition(S_windwidth, 0);
             int left = 10 - S_incorrectGuesses;
             gameUX.DisplayScore(S_player.GuessedLetters.Count, S_incorrectGuesses, S_player.Score, left);
+            
             if (!string.IsNullOrEmpty(alreadyGuessed))//Felmedelande vid samma knapptryck
-                Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(48, 10); Console.WriteLine(alreadyGuessed); Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(width-13, height - 5); Console.WriteLine(alreadyGuessed); Console.ResetColor(); 
+            
             // Skriver ut ledtråd om Moderate är valt            
             if (S_isModerate)
             {
-                Console.SetCursorPosition(0, S_windHight - 2);
+                Console.SetCursorPosition(0, S_windHeight - 2);
                 gameUX.Centered($"Clue: {S_clue}");
             }
 
-            Console.SetCursorPosition(0, S_windHight); DisplayMaskedWord(); // Skriver ut ordet med maskade bokstäver
+            Console.SetCursorPosition(0, S_windHeight); DisplayMaskedWord(); // Skriver ut ordet med maskade bokstäver
             gameUX.DisplayKeyboard();// skriver ut tagentbordslayouten enligt QWERTY
             PrintingHangman(S_incorrectGuesses);// hangmangubben skrivs ut vid fel bokstav
             guessedLetter = AskForLetter();
-            if (guessedLetter == '\0')
-            {
-                alreadyGuessed = "Invalid input! Please choose a letter";
-                continue;
-            }
+
             if (S_player.GuessedLetters.Contains(guessedLetter)) //promtar om bokstaven redan är gissad
                 alreadyGuessed = $"You've already guessed: {guessedLetter}!";
             else
@@ -120,10 +120,12 @@ public class GameLogic
 
     private void GameWon()
     {
-        Console.Clear(); // Spelet vunnet
-        Console.SetCursorPosition(S_windwidth, S_windHight - 10);
+             S_windHeight = Console.WindowHeight / 2;
+             S_windwidth = (Console.WindowWidth / 2);
+    Console.Clear(); // Spelet vunnet
+        Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
         gameUX.HangmanLogo();
-        Console.SetCursorPosition(S_windwidth, S_windHight - 3);
+        Console.SetCursorPosition(S_windwidth, S_windHeight - 3);
         Console.ForegroundColor = ConsoleColor.Green;
         gameUX.Centered($"Congratz {S_player.PlayerName}");
         gameUX.Centered($"Correct word: [{S_correctWord}] ");
@@ -134,6 +136,8 @@ public class GameLogic
 
     private void Hanged()
     {
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
         Console.Clear();
         gameUX.HangmanLogoTop();
         Console.ForegroundColor = ConsoleColor.Red; gameUX.Centered($"You've been hanged."); Console.ResetColor();
@@ -141,10 +145,10 @@ public class GameLogic
         Console.Clear();
 
         gameUX.HangmanLogoTop();
-        Console.SetCursorPosition(S_windwidth, S_windHight + 8);
+        Console.SetCursorPosition(S_windwidth, S_windHeight + 8);
 
         gameUX.HangmanLogo();
-        Console.SetCursorPosition(S_windwidth, S_windHight + 7);
+        Console.SetCursorPosition(S_windwidth, S_windHeight + 7);
         RestartGame();
 
     } // Spelet förlorat
@@ -171,6 +175,8 @@ public class GameLogic
     //}
     private void DisplayMaskedWord() //Positioning and toString of the masked word
     {
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
         int widht = Console.WindowWidth / 2 - S_correctWord!.Length / 2;
         Console.SetCursorPosition(widht, Console.CursorTop);
         string maskedWord = new string(S_letters!);
@@ -179,14 +185,15 @@ public class GameLogic
     }
     private char AskForLetter()
     {
+
         string text = "Guess a Letter by pressing a key";
-        string textInvalid = "Please choose a remaining letter from the keyboard layout.";
+        string textInvalid = "Invalid input. You can only use inputs from Keayboard layout!";
         int S_windwidth = Console.WindowWidth / 2 - text.Length / 2;
         int windwidth2 = Console.WindowWidth / 2 - textInvalid.Length / 2;
         
         while (true) // Loop until a valid letter is entered
         {
-            Console.SetCursorPosition(S_windwidth, S_windHight + 6);
+            Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(text);
             Console.ResetColor();
@@ -204,7 +211,7 @@ public class GameLogic
             }
             else if (!GameUX.Keyboard.Contains(letter))
             {
-                Console.SetCursorPosition(windwidth2, S_windHight - 3);
+                Console.SetCursorPosition(windwidth2, S_windHeight - 3);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(textInvalid);
                 Console.ResetColor();
@@ -216,8 +223,9 @@ public class GameLogic
     } // ask for input letter
     public static bool CheckLetter(char guessedLetter)
     {
-        
-    
+
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
         guessedLetter = char.ToUpper(guessedLetter);
 
         if (S_player!.GuessedLetters.Contains(guessedLetter))
@@ -251,7 +259,9 @@ public class GameLogic
     }  // Check if letter is correct
     private void EndGame()
     {
-        Console.SetCursorPosition(S_windwidth, S_windHight); Console.WriteLine();
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
+        Console.SetCursorPosition(S_windwidth, S_windHeight); Console.WriteLine();
         //gameUX.Centered($"Thanks for playing {S_player!.PlayerName}");
         gameUX.Centered($"Total amount of guesses: {S_player.GuessedLetters.Count}");
         gameUX.Centered($"You made: {S_incorrectGuesses} incorrect guesses");
@@ -259,6 +269,8 @@ public class GameLogic
     } // Endgame
     private void RestartGame()
     {
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
         Console.ForegroundColor = ConsoleColor.Yellow;
         gameUX.Centered("Do you want to play again? [Y]es or [N]o");
         Console.ResetColor();
@@ -282,10 +294,12 @@ public class GameLogic
     } //Restart game
     private void LevelChoice()
     {
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
         Console.Clear();
-        Console.SetCursorPosition(S_windwidth, S_windHight + 10);
+        Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
         gameUX.HangmanLogo();
-        Console.SetCursorPosition(S_windwidth, S_windHight - 6);
+        Console.SetCursorPosition(S_windwidth, S_windHeight - 6);
         gameUX.Centered("In this game you will try to guess the correct word");
         gameUX.Centered("You will earn two points for every correct guessed letter");
         gameUX.Centered("and you will lose one point for every incorrect one.");
@@ -323,7 +337,7 @@ public class GameLogic
 
             default:
                 Console.Clear();
-                Console.SetCursorPosition(S_windwidth, S_windHight + 10);
+                Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
                 gameUX.HangmanLogo();
                 gameUX.Centered("Invalid input");
                 LevelChoice();
@@ -356,10 +370,10 @@ public class GameLogic
         @"          /   ",
         @" /    /       ",
         @"    | |       ",
-        @"    -----------|         |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -382,10 +396,10 @@ public class GameLogic
         @"    | |      /   ",
         @" /  | |  /      ",
         @"    | |       ",
-        @"    -----------          |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -407,10 +421,10 @@ public class GameLogic
         @"    | |      /   ",
         @" /  | |  /      ",
         @"    | |       ",
-        @"    -----------          |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
         new string[]
@@ -432,10 +446,10 @@ public class GameLogic
         @"    | |      /   ",
         @" /  | |  /      ",
         @"    | |       ",
-        @"    -----------          |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -457,10 +471,10 @@ public class GameLogic
         @"    | |      /   ",
         @" /  | |  /      ",
         @"    | |       ",
-        @"    -----------          |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -482,10 +496,10 @@ public class GameLogic
         @"    | |      /   ",
         @" /  | |  /      ",
         @"    | |       ",
-        @"    -----------          |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -508,10 +522,10 @@ public class GameLogic
         @"    | |      / ",
         @" /  | |  /       ",
         @"    | |         ",
-        @"    -----------|         |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -534,10 +548,10 @@ public class GameLogic
         @"    | |      /   || ",
         @" /  | |  /       || ",
         @"    | |        / | | ",
-        @"    -----------|`-'      |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
     new string[]
@@ -560,10 +574,10 @@ public class GameLogic
         @"    | |      /   || ||",
         @" /  | |  /       || ||",
         @"    | |        / |  | \",
-        @"    -----------|`-' `-'  |--| ",
-        @"    |-|-------\ \       --|-| ",
-        @"    | |  /     \ \    /   | |",
-        @"    : :         \ \       : :",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
         //@"    . .          `'       . .",
     },
 

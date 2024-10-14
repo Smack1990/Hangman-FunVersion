@@ -96,6 +96,7 @@ public class GameUX
         // For each line, calculate the rightmost position and print it
         foreach (var line in lines)
         {
+
             Console.ForegroundColor = ConsoleColor.Red;
             int rightmostPosition = Console.WindowWidth - line.Length; // Calculate X for each line
             Console.SetCursorPosition(rightmostPosition, Console.CursorTop); // Set cursor at the rightmost position
@@ -148,7 +149,14 @@ public class GameUX
         Console.SetCursorPosition(width, Console.CursorTop);
         Console.WriteLine(text);
     }
-
+    public void SetCursorPositionSafe(int left, int top)
+    {
+        // Ensure the position is within the console's bounds
+        if (left >= 0 && left < Console.WindowWidth && top >= 0 && top < Console.WindowHeight)
+        {
+            Console.SetCursorPosition(left, top);
+        }
+    }
 
 }
 
