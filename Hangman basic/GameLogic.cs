@@ -46,15 +46,15 @@ public class GameLogic
                 break;
             case 'A':
                 Console.Clear();
-                //Console.SetCursorPosition(S_windwidth, S_windHight + 10);
                 gameUX.HangmanLogo();
                 Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
 
                 gameUX.Centered("Enter a word to the dictionary");
-                Console.SetCursorPosition(S_windwidth, Console.CursorTop);
-                S_wordList.WriteJson(Console.ReadLine()!);
+                string Wordinput = "Enter a word to the dictionary";
+                Console.SetCursorPosition(S_windwidth - 10, Console.CursorTop);
+                S_wordList.WriteJson(Console.ReadLine());
                 Console.Clear();
-                gameUX.Centered("The word was added!"); Task.Delay(2000).Wait();
+                
                 StartGame();
                 break;
         }
@@ -68,17 +68,16 @@ public class GameLogic
         char guessedLetter;
         int width = Console.WindowWidth / 2 - alreadyGuessed.Length / 2;
         int height = Console.WindowHeight / 2;
-        string text = "                      ";
-        int rightmostPosition = Console.WindowWidth - text.Length;
+        int wrongGuessedInRow = 0;
         do
         {
             Console.Clear();
 ;
-            Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
+            //Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
             gameUX.HangmanLogo();
             Console.SetCursorPosition(S_windwidth, 0);
             int left = 10 - S_incorrectGuesses;
-            gameUX.DisplayScore(S_player.GuessedLetters.Count, S_incorrectGuesses, S_player.Score, left);
+            gameUX.DisplayScore(S_player.GuessedLetters.Count,S_incorrectGuesses, wrongGuessedInRow, left, S_player);
             
             if (!string.IsNullOrEmpty(alreadyGuessed))//Felmedelande vid samma knapptryck
                 Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(width-13, height - 5); Console.WriteLine(alreadyGuessed); Console.ResetColor(); 
@@ -101,13 +100,44 @@ public class GameLogic
             {
                 alreadyGuessed = string.Empty;
                 bool correct = CheckLetter(guessedLetter); //Checkar om bokstaven finns i ordet
-                if (!correct)
+                if (correct)
                 {
+                    S_player.Score++;
+                    wrongGuessedInRow = 0; 
+                }
+                else 
+                {
+                    S_player.Score--;
                     S_incorrectGuesses++;
                     PrintingHangman(S_incorrectGuesses);
+                    wrongGuessedInRow++;
+                    if (wrongGuessedInRow == 5)
+                    {
+                        Hanged();
+                    }
+                    else if (wrongGuessedInRow == 4)
+                    {
+                        Console.Clear(); 
+                        string warning = "Be careful! You are about to get hanged.";
+                        string warningLine2 = "You guessed wrong 4/5 times in a row!";
+                        gameUX.TheRope();
+                            
+                        Console.SetCursorPosition(S_windwidth - warning.Length/2, Console.CursorTop);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(warning);
+                        Console.SetCursorPosition(S_windwidth - warningLine2.Length/2, Console.CursorTop);
+                        Console.WriteLine(warningLine2);
+                        Console.ResetColor();
+                        Console.Out.Flush(); 
+                        Thread.Sleep(3000); 
+                    }
                 }
 
             }
+            
+            
+
+            
 
             if (S_incorrectGuesses > 9) // Spelet förlorat
             {
@@ -123,7 +153,7 @@ public class GameLogic
              S_windHeight = Console.WindowHeight / 2;
              S_windwidth = (Console.WindowWidth / 2);
     Console.Clear(); // Spelet vunnet
-        Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
+        //Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHeight - 3);
         Console.ForegroundColor = ConsoleColor.Green;
@@ -145,7 +175,7 @@ public class GameLogic
         Console.Clear();
 
         gameUX.HangmanLogoTop();
-        Console.SetCursorPosition(S_windwidth, S_windHeight + 8);
+        //Console.SetCursorPosition(S_windwidth, S_windHeight + 8);
 
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHeight + 7);
@@ -204,6 +234,7 @@ public class GameLogic
                 {
                     return '_';
                 }
+                return letter;
             }
             if (S_player != null && S_player.GuessedLetters.Contains(letter))
             {
@@ -215,9 +246,9 @@ public class GameLogic
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(textInvalid);
                 Console.ResetColor();
-                continue;
+               
             }
-            return letter;
+            
         }
         
     } // ask for input letter
@@ -234,6 +265,13 @@ public class GameLogic
         bool found = false;
         for (int i = 0; i < S_correctWord!.Length; i++)
         {
+            if (S_correctWord[i] == ' ')
+            {
+                {
+                    S_letters![i] = ' '; // Automatically fill in spaces
+                    continue; // Skip to the next letter
+                }
+            }
             if (guessedLetter == char.ToUpper(S_correctWord[i]))
             {
 
@@ -301,9 +339,10 @@ public class GameLogic
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHeight - 6);
         gameUX.Centered("In this game you will try to guess the correct word");
-        gameUX.Centered("You will earn two points for every correct guessed letter");
-        gameUX.Centered("and you will lose one point for every incorrect one.");
-        gameUX.Centered("Try to get as many points as possible by thinking through your decision");
+        gameUX.Centered("You will get 1 point foreach correct guessed letter and");
+        gameUX.Centered(" you will loose 1 point foreach incorrect letter.");
+        gameUX.Centered("The game plays untill you guessed wrong 10 times, but be aware.");
+        gameUX.Centered("You will be hanged early if you guess the wrong letters 5 times in a row");
         Console.WriteLine();
         gameUX.Centered("Choose difficulty level");
         gameUX.Centered("Moderate mode has clues, and Hard mode is just what it is.");

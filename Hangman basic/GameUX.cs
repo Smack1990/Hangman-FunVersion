@@ -32,19 +32,19 @@ public class GameUX
 
 
 
-
         int windowWidth = Console.WindowWidth;
-        int windowsHeight = Console.WindowHeight / 2;
+        int windowHeight = Console.WindowHeight;
+        int startRow = (windowHeight / 2) + 7;
         Console.ForegroundColor = ConsoleColor.Red;
+        Console.SetCursorPosition(0, startRow);
         foreach (string line in logoLines)
         {
-            int centeredPosition = (windowWidth-5 - line.Length) / 2;
+            int centeredPosition = (windowWidth - line.Length) / 2;
             Console.SetCursorPosition(centeredPosition, Console.CursorTop);
             Console.WriteLine(line);
         }
         Console.ResetColor();
-
-    } // Logo for the game
+} // Logo for the game
     public void HangmanLogoTop() // logo hangman for the game
     {
         string[] linesHangman = new string[]
@@ -71,7 +71,6 @@ public class GameUX
         @"    |-|-------\ \       --|-| ",
         @"    | |  /     \ \    /   | |",
         @"    : :         \ \       : :",
-    //@"    . .          `'       . .",
 };
         int windowWidth = Console.WindowWidth;
         foreach (string line in linesHangman)
@@ -79,28 +78,63 @@ public class GameUX
             Console.SetCursorPosition(45, Console.CursorTop);
             Console.WriteLine(line);
         }
-    } 
+    }
 
-    public void DisplayScore(int correct, int incorrect, int score, int left)
+    public void TheRope()
     {
         string[] lines = new string[]
         {
-        "                        _______________",
-        $"                           {correct}      Guesses",   // Left-align the numbers with a width of 3
-        $"                          {incorrect}    InCorrect", // Left-align with width 3
-        $"                            {left} Guesses left",// Left-align with width 3
-        $"                            {score}        Score",
-        "                        ---------------"
+                    @"     ___________.._______",
+        @"    | .__________))______|",
+        @"    | | / /      ||",
+        @"    | |/ /       || ",
+        @"    | | /        ||",
+        @"    | |/         |/    /",
+        @"    | |          ||    ",
+        @"  / | |  .",
+        @"    | |        ",
+        @"    | |       /   ",
+        @"    | |      ",
+        @"/   | |     ",
+        @"    | |        ",
+        @"    | |                 /   ",
+        @"    | |      /   ",
+        @" /  | |  /      ",
+        @"    | |       ",
+        @"    ------------------------| ",
+        @"    |-|-------------------|-| ",
+        @"    | |  /            /   | |",
+        @"    : :                   : :",
+        };
+        int windowWidth = Console.WindowWidth;
+        foreach (string line in lines)
+        {
+            Console.SetCursorPosition(45, Console.CursorTop);
+            Console.WriteLine(line);
+        }
+    }
+
+    public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)
+    {
+        
+        string[] lines = new string[]
+        {
+        $"              Player: {player.PlayerName}",
+        "             __________________________",
+        $"                           {correct}      Guesses",   
+        $"                          {incorrect}    InCorrect", 
+        $"                            {left} Guesses left",
+        $"                            {wrongedGuessedInRow}/5 wrong guesses in a row",
+        $"             --------------------------"
         };
 
         // For each line, calculate the rightmost position and print it
         foreach (var line in lines)
         {
-
             Console.ForegroundColor = ConsoleColor.Red;
-            int rightmostPosition = Console.WindowWidth - line.Length; // Calculate X for each line
-            Console.SetCursorPosition(rightmostPosition, Console.CursorTop); // Set cursor at the rightmost position
-            Console.WriteLine(line); // Print the line
+            int rightmostPosition = Console.WindowWidth - line.Length;
+            Console.SetCursorPosition(rightmostPosition, Console.CursorTop);
+            Console.WriteLine(line);
         }
         Console.ResetColor();
     } // Method to display the score in the console
@@ -111,18 +145,14 @@ public class GameUX
             if (key == '\n')
             {
                 Console.WriteLine();
-                CenteredCursor(); 
+                CenteredCursor();
             }
-            else if (key == '_') 
-            {
-                Console.Write("[Space]"); 
-            }
+            else if (key == '_')
+                Console.Write("[Space]");
             else
-            {
-                Console.Write(key + " "); 
-            }
+                Console.Write(key + " ");
         }
-        Console.WriteLine(); 
+        Console.WriteLine();
         Console.ResetColor();
     }  // Method to display the keyboard in the console
 
@@ -149,14 +179,7 @@ public class GameUX
         Console.SetCursorPosition(width, Console.CursorTop);
         Console.WriteLine(text);
     }
-    public void SetCursorPositionSafe(int left, int top)
-    {
-        // Ensure the position is within the console's bounds
-        if (left >= 0 && left < Console.WindowWidth && top >= 0 && top < Console.WindowHeight)
-        {
-            Console.SetCursorPosition(left, top);
-        }
-    }
+
 
 }
 

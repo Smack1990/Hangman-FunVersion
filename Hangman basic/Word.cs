@@ -11,6 +11,8 @@ namespace Hangman_basic;
 public class Word
 {
     const string JsonWords = @"MyWords.json";
+    private static int S_windHeight = Console.WindowHeight / 2;
+    private static int S_windwidth = (Console.WindowWidth / 2);
     public List<string> WordList { get; set; }
     public Dictionary<string, string> WordClue = new Dictionary<string, string> //Dictionary with [keyword, clue]for moderate level. 
         {
@@ -125,17 +127,45 @@ public class Word
         return Path.Combine(filePath, filename);
     }
 
-    public void WriteJson(string input) //Prints new words to json-file
+    public void WriteJson(string input) // Prints new words to json-file
     {
+        GameUX gameUX = new GameUX();
         if (!string.IsNullOrEmpty(input))
         {
-            WordList.Add(input);
-        }
-        string json = JsonSerializer.Serialize(WordList);
-        var filePath = GetFilePath(JsonWords);
-        File.WriteAllText(filePath, json);
+            string inputToUpper = char.ToUpper(input[0]) + input.Substring(1);
 
-    } 
+            var filePath = GetFilePath(JsonWords);
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                WordList = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+            }
+
+            
+            if (WordList.Contains(inputToUpper, StringComparer.OrdinalIgnoreCase))
+            {
+                string text = "The word already exists in the list.";
+                Console.SetCursorPosition(S_windwidth - text.Length /2, Console.CursorTop);
+                Console.WriteLine(text);
+                Thread.Sleep(2000);
+                return;
+            }
+            else
+            {
+                string text = "The word was added successfully";
+                Console.SetCursorPosition(S_windwidth - text.Length / 2, Console.CursorTop);
+                Console.WriteLine(text); 
+                Thread.Sleep(2000);
+            }
+
+
+            WordList.Add(inputToUpper);
+
+
+            string updatedJson = JsonSerializer.Serialize(WordList);
+            File.WriteAllText(filePath, updatedJson);
+        }
+    }
 
     public void ReadJson()
     {
@@ -151,7 +181,7 @@ public class Word
         }
         else
         {
-           WordList = WordClue.Keys.ToList();
+            WordList = WordClue.Keys.ToList();
         }
     } // Reads Jsonfile
 }
