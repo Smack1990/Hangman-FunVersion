@@ -35,26 +35,42 @@ public class GameLogic
             Console.Clear();
             gameUX.HangmanLogoTop();
             gameUX.HangmanLogo();
-            gameUX.Centered("[P]lay Game | [A]dd word to Hard mode list");
+            gameUX.Centered("1.Play Game | 2. Add word to Hard mode list | 3. Add Dictionary words and clues");
             upperChar = char.ToUpper(Console.ReadKey(true).KeyChar);
-        } while (upperChar != 'P' && upperChar != 'A');
+        } while (upperChar != '1' && upperChar != '2' && upperChar != '3');
 
         switch (upperChar)
         {
-            case 'P':
+            case '1':
                 LevelChoice();
                 break;
-            case 'A':
+            case '2':
                 Console.Clear();
                 gameUX.HangmanLogo();
                 Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
 
                 gameUX.Centered("Enter a word to the dictionary");
-                string Wordinput = "Enter a word to the dictionary";
+                
                 Console.SetCursorPosition(S_windwidth - 10, Console.CursorTop);
                 S_wordList.WriteJson(Console.ReadLine());
                 Console.Clear();
-                
+
+                StartGame();
+                break;
+            case '3':
+                Console.Clear();
+                gameUX.HangmanLogo();
+                Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
+
+                gameUX.Centered("Enter a word to the dictionary");
+                Console.SetCursorPosition(S_windwidth - 10, Console.CursorTop);
+
+                string word = Console.ReadLine();
+                gameUX.Centered("Enter a clue to the word");
+                Console.SetCursorPosition(S_windwidth - 10, Console.CursorTop);
+
+                string clue = Console.ReadLine();
+                S_wordList.AddWordToDictionary(word, clue);
                 StartGame();
                 break;
         }
@@ -72,16 +88,16 @@ public class GameLogic
         do
         {
             Console.Clear();
-;
+            ;
             //Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
             gameUX.HangmanLogo();
             Console.SetCursorPosition(S_windwidth, 0);
             int left = 10 - S_incorrectGuesses;
-            gameUX.DisplayScore(S_player.GuessedLetters.Count,S_incorrectGuesses, wrongGuessedInRow, left, S_player);
-            
+            gameUX.DisplayScore(S_player.GuessedLetters.Count, S_incorrectGuesses, wrongGuessedInRow, left, S_player);
+
             if (!string.IsNullOrEmpty(alreadyGuessed))//Felmedelande vid samma knapptryck
-                Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(width-13, height - 5); Console.WriteLine(alreadyGuessed); Console.ResetColor(); 
-            
+                Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(width - 13, height - 5); Console.WriteLine(alreadyGuessed); Console.ResetColor();
+
             // Skriver ut ledtråd om Moderate är valt            
             if (S_isModerate)
             {
@@ -103,9 +119,9 @@ public class GameLogic
                 if (correct)
                 {
                     S_player.Score++;
-                    wrongGuessedInRow = 0; 
+                    wrongGuessedInRow = 0;
                 }
-                else 
+                else
                 {
                     S_player.Score--;
                     S_incorrectGuesses++;
@@ -117,27 +133,27 @@ public class GameLogic
                     }
                     else if (wrongGuessedInRow == 4)
                     {
-                        Console.Clear(); 
+                        Console.Clear();
                         string warning = "Be careful! You are about to get hanged.";
                         string warningLine2 = "You guessed wrong 4/5 times in a row!";
                         gameUX.TheRope();
-                            
-                        Console.SetCursorPosition(S_windwidth - warning.Length/2, Console.CursorTop);
+
+                        Console.SetCursorPosition(S_windwidth - warning.Length / 2, Console.CursorTop);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(warning);
-                        Console.SetCursorPosition(S_windwidth - warningLine2.Length/2, Console.CursorTop);
+                        Console.SetCursorPosition(S_windwidth - warningLine2.Length / 2, Console.CursorTop);
                         Console.WriteLine(warningLine2);
                         Console.ResetColor();
-                        Console.Out.Flush(); 
-                        Thread.Sleep(3000); 
+                        Console.Out.Flush();
+                        Thread.Sleep(3000);
                     }
                 }
 
             }
-            
-            
 
-            
+
+
+
 
             if (S_incorrectGuesses > 9) // Spelet förlorat
             {
@@ -150,9 +166,9 @@ public class GameLogic
 
     private void GameWon()
     {
-             S_windHeight = Console.WindowHeight / 2;
-             S_windwidth = (Console.WindowWidth / 2);
-    Console.Clear(); // Spelet vunnet
+        S_windHeight = Console.WindowHeight / 2;
+        S_windwidth = (Console.WindowWidth / 2);
+        Console.Clear(); // Spelet vunnet
         //Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHeight - 3);
@@ -220,7 +236,7 @@ public class GameLogic
         string textInvalid = "Invalid input. You can only use inputs from Keayboard layout!";
         int S_windwidth = Console.WindowWidth / 2 - text.Length / 2;
         int windwidth2 = Console.WindowWidth / 2 - textInvalid.Length / 2;
-        
+
         while (true) // Loop until a valid letter is entered
         {
             Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
@@ -246,11 +262,11 @@ public class GameLogic
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(textInvalid);
                 Console.ResetColor();
-               
+
             }
-            
+
         }
-        
+
     } // ask for input letter
     public static bool CheckLetter(char guessedLetter)
     {
@@ -307,17 +323,27 @@ public class GameLogic
     } // Endgame
     private void RestartGame()
     {
-        S_windHeight = Console.WindowHeight / 2;
-        S_windwidth = (Console.WindowWidth / 2);
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        gameUX.Centered("Do you want to play again? [Y]es or [N]o");
-        Console.ResetColor();
+        bool restart = false;
+        if (!restart)
+        {
+            string restartMessage = "Do you want to play again? [Y]es or [N]o";
+            restart = true;
+            S_windHeight = Console.WindowHeight / 2;
+            S_windwidth = (Console.WindowWidth / 2 - restartMessage.Length / 2);
+            gameUX.HangmanLogo();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
+            Console.WriteLine(restartMessage);
+            Console.ResetColor();
+        }
         char upperChar = char.ToUpper(Console.ReadKey(true).KeyChar);
         switch (upperChar)
         {
             case 'Y':
+
                 Console.Clear();
                 gameUX.KeyboardCleanUp();
+                restart = false;
                 StartGame();
                 break;
             case 'N':
@@ -325,7 +351,9 @@ public class GameLogic
                 break;
             default:
 
-
+                Console.Clear();
+                gameUX.KeyboardCleanUp();
+                restart = false;
                 RestartGame();
                 break;
         }
