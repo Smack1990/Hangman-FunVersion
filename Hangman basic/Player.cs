@@ -18,15 +18,23 @@ public class Player
     }
     public void AskForUsersName() //Handels username input
     {
+        int S_windHeight = Console.WindowHeight / 2;
+        int S_windwidth = (Console.WindowWidth / 2);
         int width = Console.WindowWidth / 2 - 10;
         int hight = Console.WindowHeight / 2;
 
         GameUX gameUX = new GameUX();
-        Console.SetCursorPosition(width, Console.CursorTop); Console.Write("Enter your name:");
+        Console.SetCursorPosition(width, hight + 10);
+        gameUX.HangmanLogo();
+        
+        Console.SetCursorPosition(width, hight); Console.Write("Enter your name:");
+        Console.SetCursorPosition(width + 16, hight); string input = Console.ReadLine()!;
+        Console.SetCursorPosition(width, hight);
+        string inputToUpper = char.ToUpper(input[0]) + input.Substring(1);
+       
 
-        Console.SetCursorPosition(width + 16, Console.CursorTop); string input = Console.ReadLine()!;
-        if (input.Length >= 2)
-            PlayerName = input;
+        if (inputToUpper.Length >= 2)
+            PlayerName = inputToUpper;
         else
         {
             Console.Clear();
@@ -37,6 +45,7 @@ public class Player
 
             AskForUsersName();
         }
+        Console.Clear();
     }
 
 

@@ -10,6 +10,10 @@ using System.Threading.Tasks.Sources;
 namespace Hangman_basic;
 public class GameUX
 {
+    public int CountdownTime { get; private set; }
+    private CancellationTokenSource _cancellationTokenSource;
+    private Thread countdownThread;
+    private bool countdownRunning;
 
     public static char[] Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray(); // Keyboard for the game
     public void KeyboardCleanUp()
@@ -44,7 +48,7 @@ public class GameUX
             Console.WriteLine(line);
         }
         Console.ResetColor();
-} // Logo for the game
+    } // Logo for the game
     public void HangmanLogoTop() // logo hangman for the game
     {
         string[] linesHangman = new string[]
@@ -116,24 +120,27 @@ public class GameUX
 
     public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)
     {
-        
+
         string[] lines = new string[]
         {
         $"              Player: {player.PlayerName}",
         "             __________________________",
-        $"                           {correct}      Guesses",   
-        $"                          {incorrect}    InCorrect", 
+        $"                           {correct}      Guesses",
+        $"                          {incorrect}    InCorrect",
         $"                            {left} Guesses left",
         $"                            {wrongedGuessedInRow}/5 wrong guesses in a row",
+        //$"                            {countdown}seconds left",
         $"             --------------------------"
         };
 
         // For each line, calculate the rightmost position and print it
         foreach (var line in lines)
         {
+            int x = 7;
             Console.ForegroundColor = ConsoleColor.Red;
             int rightmostPosition = Console.WindowWidth - line.Length;
             Console.SetCursorPosition(rightmostPosition, Console.CursorTop);
+            x++;
             Console.WriteLine(line);
         }
         Console.ResetColor();
@@ -179,7 +186,76 @@ public class GameUX
         Console.SetCursorPosition(width, Console.CursorTop);
         Console.WriteLine(text);
     }
+    //public void StartCountdown(int seconds, Action<int> countdownCallback)
+    //{
+    //    CountdownTime = seconds;
+    //    _cancellationTokenSource = new CancellationTokenSource();
+    //    var token = _cancellationTokenSource.Token;
 
+    //    Task.Run(async () =>
+    //    {
+    //        while (CountdownTime > 0)
+    //        {
+    //            await Task.Delay(1000); // Wait for 1 second
+    //            CountdownTime--; // Decrease countdown time
 
+    //            countdownCallback?.Invoke(CountdownTime); // Invoke the callback with the updated countdown time
+
+    //            if (token.IsCancellationRequested) break; // Stop countdown if cancelled
+    //        }
+
+    //        if (CountdownTime == 0)
+    //        {
+    //            // Handle timeout case
+    //            Console.SetCursorPosition(0, Console.WindowHeight - 1);
+    //            Console.Write("Time's up! Press a key to continue...".PadRight(Console.WindowWidth - 1));
+    //        }
+    //    }, token);
+    //}
+
+    //// Stop the currently running countdown thread
+    //public void StopCountdown()
+    //{
+    //    if (_cancellationTokenSource != null)
+    //    {
+    //        _cancellationTokenSource.Cancel(); // Signal the countdown to stop
+    //        _cancellationTokenSource.Dispose(); // Clean up resources
+    //    }
+    //}
+    //// Countdown logic
+    //private void Countdown()
+    //{
+    //    while (countdownRunning && CountdownTime > 0)
+    //    {
+    //        // Create the countdown text
+    //        string text = $"Time left: {CountdownTime} seconds";
+    //        int windowWidth = Console.WindowWidth / 2 - text.Length / 2;
+
+    //        // Clear the previous countdown text before writing the new one
+    //        Console.SetCursorPosition(windowWidth, 4);
+    //        Console.Write(new string(' ', text.Length));  // Clears the previous countdown
+
+    //        // Now write the updated countdown text
+    //        Console.SetCursorPosition(windowWidth, 4);
+    //        Console.Write(text);
+
+    //        System.Threading.Thread.Sleep(1000);  // Wait for 1 second
+    //        CountdownTime--;
+
+    //        // If the countdown reaches zero
+    //        if (CountdownTime == 0)
+    //        {
+    //            Console.SetCursorPosition(windowWidth, 4);
+    //            Console.Write(new string(' ', text.Length));  // Clears the final countdown
+    //            Console.WriteLine("Time's up!");  // Optionally show a message when time's up
+    //            countdownRunning = false;
+    //        }
+    //    }
+    //}
+    
 }
+
+
+
+
 

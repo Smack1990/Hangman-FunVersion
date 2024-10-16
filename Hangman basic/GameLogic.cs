@@ -16,12 +16,14 @@ public class GameLogic
     private static string? S_correctWord;
     private static char[]? S_letters;
     private static Player? S_player;
-    private static int S_incorrectGuesses;
+    public static int S_incorrectGuesses;
     private static GameUX gameUX = new GameUX();
     private static int S_windHeight = Console.WindowHeight / 2;
     private static int S_windwidth = (Console.WindowWidth / 2);
     private static string? S_clue;
     private static bool S_isModerate = false;
+    private static bool S_countdown = false;
+    private static int S_countDownLimit = 0;
 
 
 
@@ -35,7 +37,7 @@ public class GameLogic
             Console.Clear();
             gameUX.HangmanLogoTop();
             gameUX.HangmanLogo();
-            gameUX.Centered("1.Play Game | 2. Add word to Hard mode list | 3. Add Dictionary words and clues");
+            gameUX.Centered("Press:  1:[Play Game] | 2:[Add words and clues to Moderate mode] | 3:[Add words to Hard mode]  ");
             upperChar = char.ToUpper(Console.ReadKey(true).KeyChar);
         } while (upperChar != '1' && upperChar != '2' && upperChar != '3');
 
@@ -44,20 +46,20 @@ public class GameLogic
             case '1':
                 LevelChoice();
                 break;
-            case '2':
+            case '3':
                 Console.Clear();
                 gameUX.HangmanLogo();
                 Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
 
                 gameUX.Centered("Enter a word to the dictionary");
-                
+
                 Console.SetCursorPosition(S_windwidth - 10, Console.CursorTop);
                 S_wordList.WriteJson(Console.ReadLine());
                 Console.Clear();
 
                 StartGame();
                 break;
-            case '3':
+            case '2':
                 Console.Clear();
                 gameUX.HangmanLogo();
                 Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
@@ -79,27 +81,43 @@ public class GameLogic
     {
         bool level = true;
         S_player = new Player("");
-        S_player.AskForUsersName();
+
+
         string alreadyGuessed = string.Empty;
         char guessedLetter;
         int width = Console.WindowWidth / 2 - alreadyGuessed.Length / 2;
         int height = Console.WindowHeight / 2;
         int wrongGuessedInRow = 0;
+
+        int count = 10;
+        int left = 10 - S_incorrectGuesses;
+
+
+
+        //gameUX.StartCountdown(10, (count) =>
+        //{
+        //    // Code to execute on each countdown tick
+        //    // You can access the current countdown value through the 'count' parameter
+        //});
+
         do
         {
             Console.Clear();
-            ;
-            //Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
+
+
+            Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
             gameUX.HangmanLogo();
+
             Console.SetCursorPosition(S_windwidth, 0);
-            int left = 10 - S_incorrectGuesses;
+
             gameUX.DisplayScore(S_player.GuessedLetters.Count, S_incorrectGuesses, wrongGuessedInRow, left, S_player);
 
             if (!string.IsNullOrEmpty(alreadyGuessed))//Felmedelande vid samma knapptryck
-                Console.ForegroundColor = ConsoleColor.Green; Console.SetCursorPosition(width - 13, height - 5); Console.WriteLine(alreadyGuessed); Console.ResetColor();
+                Console.SetCursorPosition(49, 8); Console.WriteLine($"{alreadyGuessed}");
+
 
             // Skriver ut ledtråd om Moderate är valt            
-            if (S_isModerate)
+            if (S_isModerate && S_incorrectGuesses >= 4)
             {
                 Console.SetCursorPosition(0, S_windHeight - 2);
                 gameUX.Centered($"Clue: {S_clue}");
@@ -111,7 +129,7 @@ public class GameLogic
             guessedLetter = AskForLetter();
 
             if (S_player.GuessedLetters.Contains(guessedLetter)) //promtar om bokstaven redan är gissad
-                alreadyGuessed = $"You've already guessed: {guessedLetter}!";
+                alreadyGuessed = $"You've already guessed:{guessedLetter}";
             else
             {
                 alreadyGuessed = string.Empty;
@@ -129,40 +147,64 @@ public class GameLogic
                     wrongGuessedInRow++;
                     if (wrongGuessedInRow == 5)
                     {
+                        //gameUX.StopCountdown();
                         Hanged();
                     }
                     else if (wrongGuessedInRow == 4)
                     {
-                        Console.Clear();
-                        string warning = "Be careful! You are about to get hanged.";
-                        string warningLine2 = "You guessed wrong 4/5 times in a row!";
-                        gameUX.TheRope();
-
-                        Console.SetCursorPosition(S_windwidth - warning.Length / 2, Console.CursorTop);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(warning);
-                        Console.SetCursorPosition(S_windwidth - warningLine2.Length / 2, Console.CursorTop);
-                        Console.WriteLine(warningLine2);
-                        Console.ResetColor();
-                        Console.Out.Flush();
-                        Thread.Sleep(3000);
+                        //gameUX.StopCountdown();
+                        ShowWarning();
+                        //gameUX.StartCountdown(10);
                     }
                 }
-
+                //gameUX.StopCountdown();
+                //gameUX.StartCountdown(10);
             }
-
-
-
-
 
             if (S_incorrectGuesses > 9) // Spelet förlorat
             {
+
+                //gameUX.StopCountdown(); // Stop countdown if the game is won
                 Hanged();
             }
+            if (S_correctWord == new string(S_letters))
+            {
+                //gameUX.StopCountdown(); // Stop countdown if the game is won
+                GameWon();
+                break;
+            }
+
+
+            // Handle timeout if countdown reaches zero
+            //if (gameUX.CountdownTime == 0)
+            //{
+            //    S_countDownLimit++;
+            //    S_incorrectGuesses++;
+            //gameUX.StartCountdown(10); // Restart countdown after timeout
+            //}
+
+
 
         } while (S_correctWord != new string(S_letters)); // loop körs så länge det finns _ kvar i ordet
         GameWon();
     }// Game logics
+
+    private static void ShowWarning()
+    {
+        Console.Clear();
+        string warning = "Be careful! You are about to get hanged.";
+        string warningLine2 = "You guessed wrong 4/5 times in a row!";
+        gameUX.TheRope();
+
+        Console.SetCursorPosition(S_windwidth - warning.Length / 2, Console.CursorTop);
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(warning);
+        Console.SetCursorPosition(S_windwidth - warningLine2.Length / 2, Console.CursorTop);
+        Console.WriteLine(warningLine2);
+        Console.ResetColor();
+        Console.Out.Flush();
+        Thread.Sleep(3000);
+    }
 
     private void GameWon()
     {
@@ -254,7 +296,7 @@ public class GameLogic
             }
             if (S_player != null && S_player.GuessedLetters.Contains(letter))
             {
-                Console.WriteLine("Already guessed that.");
+                Console.SetCursorPosition(49, 8); Console.WriteLine($"You already guessed: {letter}");
             }
             else if (!GameUX.Keyboard.Contains(letter))
             {
@@ -326,7 +368,7 @@ public class GameLogic
         bool restart = false;
         if (!restart)
         {
-            string restartMessage = "Do you want to play again? [Y]es or [N]o";
+            string restartMessage = "Press: 1:[New Game] | 2:[Change Name] | 4: [Main Meny] | 3:[Quit Game] ";
             restart = true;
             S_windHeight = Console.WindowHeight / 2;
             S_windwidth = (Console.WindowWidth / 2 - restartMessage.Length / 2);
@@ -339,14 +381,43 @@ public class GameLogic
         char upperChar = char.ToUpper(Console.ReadKey(true).KeyChar);
         switch (upperChar)
         {
-            case 'Y':
-
+            case '1':
+                Console.Clear();
+                gameUX.KeyboardCleanUp();
+                restart = false;
+                if (S_isModerate)
+                {
+                    S_isModerate = true;
+                    var randomEntry = S_wordList.WordClue.ElementAt(new Random().Next(0, S_wordList.WordClue.Count));
+                    S_correctWord = randomEntry.Key;
+                    S_clue = randomEntry.Value;
+                    S_letters = new char[S_correctWord.Length];
+                    for (int i = 0; i < S_correctWord.Length; i++)
+                        S_letters[i] = '_';
+                    PlayGame();
+                }
+                if (!S_isModerate)
+                {
+                    S_countdown = true;
+                    S_isModerate = false;
+                    S_correctWord = S_wordList.WordList[new Random().Next(0, S_wordList.WordList.Count)];
+                    S_letters = new char[S_correctWord.Length];
+                    for (int i = 0; i < S_correctWord.Length; i++)
+                        S_letters[i] = '_';
+                    PlayGame();
+                }
+                break;
+            case '2':
                 Console.Clear();
                 gameUX.KeyboardCleanUp();
                 restart = false;
                 StartGame();
+
                 break;
-            case 'N':
+            case '3':
+                StartGame();
+                break;
+            case '4':
                 Environment.Exit(0);
                 break;
             default:
@@ -360,12 +431,14 @@ public class GameLogic
     } //Restart game
     private void LevelChoice()
     {
+        S_player = new Player("");
         S_windHeight = Console.WindowHeight / 2;
         S_windwidth = (Console.WindowWidth / 2);
         Console.Clear();
-        Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
-        gameUX.HangmanLogo();
+
+        S_player.AskForUsersName();
         Console.SetCursorPosition(S_windwidth, S_windHeight - 6);
+        gameUX.Centered($"Welcome {S_player.PlayerName}\n");
         gameUX.Centered("In this game you will try to guess the correct word");
         gameUX.Centered("You will get 1 point foreach correct guessed letter and");
         gameUX.Centered(" you will loose 1 point foreach incorrect letter.");
@@ -376,13 +449,15 @@ public class GameLogic
         gameUX.Centered("Moderate mode has clues, and Hard mode is just what it is.");
         gameUX.Centered("Ah! By the way... We do not do Easy mode...");
         Console.WriteLine();
-        gameUX.Centered("[M]oderate | [H]ard");
+        gameUX.Centered("Press: 1:[Moderate] | 2:[Hard] | 3:[Quit Game]");
+        Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
+        gameUX.HangmanLogo();
 
         var keyPressed = Console.ReadKey(true).KeyChar;
 
         switch (char.ToUpper(keyPressed))
         {
-            case 'M':
+            case '1':
                 S_isModerate = true;
                 var randomEntry = S_wordList.WordClue.ElementAt(new Random().Next(0, S_wordList.WordClue.Count));
                 S_correctWord = randomEntry.Key;
@@ -390,16 +465,22 @@ public class GameLogic
                 S_letters = new char[S_correctWord.Length];
                 for (int i = 0; i < S_correctWord.Length; i++)
                     S_letters[i] = '_';
+                
                 PlayGame();
                 break;
 
-            case 'H':
+            case '2':
+                S_countdown = true;
                 S_isModerate = false;
                 S_correctWord = S_wordList.WordList[new Random().Next(0, S_wordList.WordList.Count)];
                 S_letters = new char[S_correctWord.Length];
                 for (int i = 0; i < S_correctWord.Length; i++)
                     S_letters[i] = '_';
+                
                 PlayGame();
+                break;
+            case '3':
+                Environment.Exit(0);
                 break;
 
             default:
