@@ -84,9 +84,11 @@ public class GameLogic
     } //Entrencepoint to game
     private void PlayGame()
     {
+        
+
         IsGameOver = false;
         bool level = true;
-        S_player = new Player("");
+       
 
 
         string alreadyGuessed = string.Empty;
@@ -404,7 +406,7 @@ public class GameLogic
         do
         {
             Console.Clear();
-            string restartMessage = "Press: 1:[New Game] | 2:[Change Name] | 4: [Main Meny] | 3:[Quit Game] ";
+            string restartMessage = "Press: 1:[New Game] | 2:[Change Name] | 3: [Main Meny] | 4:[Quit Game] ";
             restart = false;
             S_windHeight = Console.WindowHeight / 2;
             S_windwidth = (Console.WindowWidth / 2 - restartMessage.Length / 2);

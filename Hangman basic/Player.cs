@@ -31,7 +31,7 @@ public class Player
         Console.SetCursorPosition(width + 16, hight); string input = Console.ReadLine()!;
         Console.SetCursorPosition(width, hight);
         string inputToUpper = char.ToUpper(input[0]) + input.Substring(1);
-       
+        Console.Clear();
 
         if (inputToUpper.Length >= 2)
             PlayerName = inputToUpper;
@@ -40,7 +40,7 @@ public class Player
             Console.Clear();
             Console.SetCursorPosition(width, hight + 10);
             gameUX.HangmanLogo();
-            Console.SetCursorPosition(width, hight);
+            Console.SetCursorPosition(width, hight +1);
             gameUX.Centered("Your name was too short. Please enter a valid name.\n");
 
             AskForUsersName();

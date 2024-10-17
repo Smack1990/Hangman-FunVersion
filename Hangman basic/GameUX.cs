@@ -126,7 +126,7 @@ public class GameUX
 
     public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)
     {
-
+        
         string[] lines = new string[]
         {
         $"              Player: {player.PlayerName}",
