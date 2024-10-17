@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,6 +15,11 @@ public class GameUX
     private CancellationTokenSource _cancellationTokenSource;
     private Thread countdownThread;
     private bool countdownRunning;
+    static PeriodicTimer secondTimer;
+    public int Secs = 26;
+    public int Millis = 1000; // Start from 1000 ms for 1 second
+    public int CountdownLimit = 0;
+    public int countdownTime = 10;
 
     public static char[] Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray(); // Keyboard for the game
     public void KeyboardCleanUp()
@@ -129,7 +135,7 @@ public class GameUX
         $"                          {incorrect}    InCorrect",
         $"                            {left} Guesses left",
         $"                            {wrongedGuessedInRow}/5 wrong guesses in a row",
-        //$"                            {countdown}seconds left",
+        $"                            {CountdownLimit}/3 Countdown limit",
         $"             --------------------------"
         };
 
@@ -186,73 +192,77 @@ public class GameUX
         Console.SetCursorPosition(width, Console.CursorTop);
         Console.WriteLine(text);
     }
-    //public void StartCountdown(int seconds, Action<int> countdownCallback)
-    //{
-    //    CountdownTime = seconds;
-    //    _cancellationTokenSource = new CancellationTokenSource();
-    //    var token = _cancellationTokenSource.Token;
 
-    //    Task.Run(async () =>
-    //    {
-    //        while (CountdownTime > 0)
-    //        {
-    //            await Task.Delay(1000); // Wait for 1 second
-    //            CountdownTime--; // Decrease countdown time
+    public async Task StartTimer(CancellationToken token)
+    {
+        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100)); // Timer ticks every 100ms
+        GameLogic gameLogic = new GameLogic();
+        while (await secondTimer.WaitForNextTickAsync(token))
+        {
+            Millis -= 100; // Minska millisekunderna med 100ms vid varje tick
 
-    //            countdownCallback?.Invoke(CountdownTime); // Invoke the callback with the updated countdown time
+            if (Millis <= 0)
+            {
+                Secs--; // När 1000ms har gått, minska sekunderna
+                Millis = 1000; // Återställ millisekunder
+            }
 
-    //            if (token.IsCancellationRequested) break; // Stop countdown if cancelled
-    //        }
+            // Uppdatera nedräkningen
+            Console.SetCursorPosition(105, 8); // Justera positionen för timern
+            Console.Write($"Timer: {Secs.ToString("00")}:{Millis.ToString("000")}");
 
-    //        if (CountdownTime == 0)
-    //        {
-    //            // Handle timeout case
-    //            Console.SetCursorPosition(0, Console.WindowHeight - 1);
-    //            Console.Write("Time's up! Press a key to continue...".PadRight(Console.WindowWidth - 1));
-    //        }
-    //    }, token);
-    //}
+            // Stoppa nedräkningen och kalla Hanged() om tiden är slut
+            if (Secs <= 0)
+            {
+                // Säkerställ att vi inte går under 0 sekunder
+                Secs = 0;
+                Millis = 0;
 
-    //// Stop the currently running countdown thread
-    //public void StopCountdown()
-    //{
-    //    if (_cancellationTokenSource != null)
-    //    {
-    //        _cancellationTokenSource.Cancel(); // Signal the countdown to stop
-    //        _cancellationTokenSource.Dispose(); // Clean up resources
-    //    }
-    //}
-    //// Countdown logic
-    //private void Countdown()
-    //{
-    //    while (countdownRunning && CountdownTime > 0)
-    //    {
-    //        // Create the countdown text
-    //        string text = $"Time left: {CountdownTime} seconds";
-    //        int windowWidth = Console.WindowWidth / 2 - text.Length / 2;
+                // Visa "Time's up!" meddelande och stoppa nedräkningen
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.WriteLine("Time's up!");
+                gameLogic.IsGameOver = true;
+                gameLogic.Hanged(); // Anropa Hanged() när tiden tar slut
+                break; // Bryt ut från while-loopen
+            }
+            if (GameLogic.S_wrongGuessesInRow == 5 && Secs < 0)
+            {
+                token.ThrowIfCancellationRequested(); // Om timern har blivit avbruten
+                secondTimer?.Dispose(); // Avsluta timern
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.WriteLine("You have been hanged due to too many wrong guesses!");
+                gameLogic.IsGameOver = true;
+                gameLogic.Hanged(); // Anropa Hanged() vid hängning
+                break;
 
-    //        // Clear the previous countdown text before writing the new one
-    //        Console.SetCursorPosition(windowWidth, 4);
-    //        Console.Write(new string(' ', text.Length));  // Clears the previous countdown
+            }
+            if (GameLogic.S_incorrectGuesses > 9)
+            {
+                token.ThrowIfCancellationRequested(); // Check for cancellation
+                secondTimer.Dispose(); // Dispose of the timer
+                gameLogic.IsGameOver = true; // Set game over flag
+                gameLogic.Hanged(); // Call Hanged
+                break;
+            }
 
-    //        // Now write the updated countdown text
-    //        Console.SetCursorPosition(windowWidth, 4);
-    //        Console.Write(text);
 
-    //        System.Threading.Thread.Sleep(1000);  // Wait for 1 second
-    //        CountdownTime--;
 
-    //        // If the countdown reaches zero
-    //        if (CountdownTime == 0)
-    //        {
-    //            Console.SetCursorPosition(windowWidth, 4);
-    //            Console.Write(new string(' ', text.Length));  // Clears the final countdown
-    //            Console.WriteLine("Time's up!");  // Optionally show a message when time's up
-    //            countdownRunning = false;
-    //        }
-    //    }
-    //}
-    
+            if (token.IsCancellationRequested)
+            {
+                break; // Avsluta timern om den har blivit avbruten
+            }
+        }
+    }
+    public void ResetTimer()
+    {
+        _cancellationTokenSource?.Cancel(); // Cancel the previous countdown
+        Secs = CountdownLimit; // Reset seconds to the original countdown time
+        Millis = 1000; // Reset milliseconds to start from 1000ms
+        _cancellationTokenSource = new CancellationTokenSource(); // Reset cancellation token source
+        _ = StartTimer(_cancellationTokenSource.Token); // Restart the timer
+    }
+
+
 }
 
 
