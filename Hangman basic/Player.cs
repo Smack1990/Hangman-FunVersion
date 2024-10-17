@@ -8,13 +8,13 @@ namespace Hangman_basic;
 public class Player
 {
     public string PlayerName { get; private set; }
-    public int Score { get; set; }
+   
     public List<char> GuessedLetters = new List<char>();
     public Player(string name)
     {
         PlayerName = name;
         GuessedLetters = new List<char>();
-        Score = 0;
+  
     }
     public void AskForUsersName() //Handels username input
     {

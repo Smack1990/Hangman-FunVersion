@@ -16,7 +16,7 @@ public class GameLogic
     private static string? S_correctWord;
     private static char[]? S_letters;
     private static Player? S_player;
-    public static int S_incorrectGuesses;
+    public static int S_incorrectGuesses = 0;
     private static GameUX gameUX = new GameUX();
     private static int S_windHeight = Console.WindowHeight / 2;
     private static int S_windwidth = (Console.WindowWidth / 2);
@@ -35,7 +35,7 @@ public class GameLogic
     public void StartGame()
     {
 
-        S_incorrectGuesses = 0;
+
         char upperChar;
         do
         {
@@ -84,11 +84,11 @@ public class GameLogic
     } //Entrencepoint to game
     private void PlayGame()
     {
-        
+
 
         IsGameOver = false;
-        bool level = true;
-       
+
+
 
 
         string alreadyGuessed = string.Empty;
@@ -99,15 +99,15 @@ public class GameLogic
 
 
 
-        int count = 10;
+
         if (S_isModerate)
         {
-            gameUX.Secs = 20;
+            gameUX.Secs = 60;
             _ = gameUX.StartTimer(cts.Token);
         }
         else if (S_isHard)
         {
-            gameUX.Secs = 10;
+            gameUX.Secs = 3;
             _ = gameUX.StartTimer(cts.Token);
         }
 
@@ -157,12 +157,12 @@ public class GameLogic
                 bool correct = CheckLetter(guessedLetter); //Checkar om bokstaven finns i ordet
                 if (correct)
                 {
-                    S_player.Score++;
+
                     S_wrongGuessesInRow = 0;
                 }
                 else
                 {
-                    S_player.Score--;
+
                     S_incorrectGuesses++;
                     PrintingHangman(S_incorrectGuesses);
                     S_wrongGuessesInRow++;
@@ -198,29 +198,23 @@ public class GameLogic
             }
             if (S_correctWord == new string(S_letters))
             {
-                //gameUX.StopCountdown(); // Stop countdown if the game is won
+
                 cts.Cancel(); // Stop the timer when the game ends
 
                 GameWon();
+
                 break;
             }
 
 
-            // Handle timeout if countdown reaches zero
-            //if (gameUX.CountdownTime == 0)
-            //{
-            //    S_countDownLimit++;
-            //    S_incorrectGuesses++;
-            //gameUX.StartCountdown(10); // Restart countdown after timeout
-            //}
 
 
 
         } while (!IsGameOver); // loop körs så länge det finns _ kvar i ordet
 
         cts.Cancel(); // Stop the timer when the game ends
-
         GameWon();
+
     }// Game logics
 
     private static void ShowWarning()
@@ -242,10 +236,10 @@ public class GameLogic
 
     private void GameWon()
     {
-        S_windHeight = Console.WindowHeight / 2;
-        S_windwidth = (Console.WindowWidth / 2);
-        Console.Clear(); // Spelet vunnet
-        //Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
+
+
+        Console.Clear();
+        Console.SetCursorPosition(S_windwidth, S_windHeight + 10);
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHeight - 3);
         Console.ForegroundColor = ConsoleColor.Green;
@@ -253,14 +247,15 @@ public class GameLogic
         gameUX.Centered($"Correct word: [{S_correctWord}] ");
         Console.ResetColor();
         EndGame();
+        gameUX.Centered("Press any key to continue");
+        Console.ReadKey(true);
         RestartGame();
     } // Spelet vunnet
 
     public void Hanged()
     {
-        S_windHeight = Console.WindowHeight / 2;
-        S_windwidth = (Console.WindowWidth / 2);
-        Console.Clear();
+
+        //Console.Clear();
         gameUX.HangmanLogoTop();
         Console.ForegroundColor = ConsoleColor.Red; gameUX.Centered($"You've been hanged."); Console.ResetColor();
         gameUX.Centered($"The correct word was [{S_correctWord}]"); Task.Delay(4000).Wait();
@@ -273,34 +268,14 @@ public class GameLogic
         gameUX.HangmanLogo();
         Console.SetCursorPosition(S_windwidth, S_windHeight + 7);
 
-        //RestartGame();
+        RestartGame();
 
     } // Spelet förlorat
 
-    private static void GuessedLettersDisplay()
-    {
-        //int startX = 45;
-        //int startY = 6;
-        //int currentX = startX;
 
-        //Console.SetCursorPosition(startX, startY);
-        //Console.Write(new string(' ', Console.WindowWidth - startX));
-        //foreach (var letter in S_player.GuessedLetters)
-        //{
-        //    if (S_correctWord.ToUpper().Contains(letter))
-        //        Console.ForegroundColor = ConsoleColor.Green;
-        //    else
-        //        Console.ForegroundColor = ConsoleColor.Red;
-        //    Console.SetCursorPosition(currentX, startY);
-        //    Console.Write($"{letter.ToString()}, ");
-        //    currentX += 2;
-        //}
-        //Console.ResetColor();
-    }
     private void DisplayMaskedWord() //Positioning and toString of the masked word
     {
-        S_windHeight = Console.WindowHeight / 2;
-        S_windwidth = (Console.WindowWidth / 2);
+
         int widht = Console.WindowWidth / 2 - S_correctWord!.Length / 2;
         Console.SetCursorPosition(widht, Console.CursorTop);
         string maskedWord = new string(S_letters!);
@@ -322,7 +297,7 @@ public class GameLogic
             Console.WriteLine(text);
             Console.ResetColor();
             char letter = char.ToUpper(Console.ReadKey(true).KeyChar);
-             if (GameUX.Keyboard.Contains(letter))
+            if (GameUX.Keyboard.Contains(letter))
             {
                 if (letter == ' ')
                 {
@@ -349,15 +324,14 @@ public class GameLogic
     public static bool CheckLetter(char guessedLetter)
     {
 
-        S_windHeight = Console.WindowHeight / 2;
-        S_windwidth = (Console.WindowWidth / 2);
+        ;
         guessedLetter = char.ToUpper(guessedLetter);
 
         if (S_player!.GuessedLetters.Contains(guessedLetter))
             return false;
         S_player.GuessedLetters.Add(guessedLetter);
         bool found = false;
-        for (int i = 0;  i < S_correctWord!.Length; i++)
+        for (int i = 0; i < S_correctWord!.Length; i++)
         {
             if (S_correctWord[i] == ' ')
             {
@@ -375,46 +349,57 @@ public class GameLogic
         }
 
         //Scorehandler. Increases the amount of points with 2 if the letter is correct and decreases with 1 if it's wrong.
-        if (found)
-        {
-            int pointsUp = 2;
-            S_player.Score += pointsUp;
-        }
-        else
-        {
-            int pointsDown = 1;
-            S_player.Score = Math.Max(0, S_player.Score - pointsDown);
-        }
+
         gameUX.UpdateKeyboard(guessedLetter);
 
         return found;
     }  // Check if letter is correct
+
     private void EndGame()
     {
         S_windHeight = Console.WindowHeight / 2;
         S_windwidth = (Console.WindowWidth / 2);
-        Console.SetCursorPosition(S_windwidth, S_windHeight); Console.WriteLine();
-        //gameUX.Centered($"Thanks for playing {S_player!.PlayerName}");
+        Console.SetCursorPosition(S_windwidth, S_windHeight);
+        Console.WriteLine();
+
+        // Determine elapsed time
+        int elapsedTime = 0;
+        if (S_isModerate)
+        {
+            // For Moderate mode, starting time is 60 seconds
+            elapsedTime = 60 - gameUX.Secs;
+        }
+        else if (S_isHard)
+        {
+            // For Hard mode, starting time is 30 seconds
+            elapsedTime = 30 - gameUX.Secs;
+        }
+
+        // Display results
         gameUX.Centered($"Total amount of guesses: {S_player.GuessedLetters.Count}");
         gameUX.Centered($"You made: {S_incorrectGuesses} incorrect guesses");
-        gameUX.Centered($"Your final score: {S_player.Score}");
+       
+
+        // Display elapsed time
+        if (S_isModerate || S_isHard)
+        {
+            gameUX.Centered($"Elapsed time: {elapsedTime} seconds");
+        }
     } // Endgame
     private void RestartGame()
     {
         bool restart = false;
-        char upperChar; 
+        char upperChar;
         do
         {
             Console.Clear();
             string restartMessage = "Press: 1:[New Game] | 2:[Change Name] | 3: [Main Meny] | 4:[Quit Game] ";
             restart = false;
-            S_windHeight = Console.WindowHeight / 2;
+
             S_windwidth = (Console.WindowWidth / 2 - restartMessage.Length / 2);
             gameUX.HangmanLogo();
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
+            Console.SetCursorPosition(S_windwidth, S_windHeight);
             Console.WriteLine(restartMessage);
-            Console.ResetColor();
             upperChar = char.ToUpper(Console.ReadKey(true).KeyChar);
         }
         while (upperChar != '1' && upperChar != '2' && upperChar != '3' && upperChar != '4');
@@ -446,6 +431,7 @@ public class GameLogic
 
                 if (S_isModerate)
                 {
+                    gameUX.KeyboardCleanUp();
                     restart = true;
                     S_isModerate = true;
                     var randomEntry = S_wordList.WordClue.ElementAt(new Random().Next(0, S_wordList.WordClue.Count));
@@ -463,11 +449,12 @@ public class GameLogic
                 }
                 //När man väljer att börja om. så går det inte skriva in. den går direkt till restartgame.
 
-                if (!S_isModerate)
+                if (S_isHard)
                 {
+                    gameUX.KeyboardCleanUp();
                     restart = true;
                     S_countdown = true;
-                    S_isModerate = false;  //Lägg till alla räknare som skall nollställas.
+                    S_isHard = true;  //Lägg till alla räknare som skall nollställas.
                     S_correctWord = S_wordList.WordList[new Random().Next(0, S_wordList.WordList.Count)];
                     S_letters = new char[S_correctWord.Length];
                     S_incorrectGuesses = 0;
@@ -481,13 +468,26 @@ public class GameLogic
                 }
                 break;
             case '2':
+
                 Console.Clear();
+                restart = true;
+                S_incorrectGuesses = 0;
                 gameUX.KeyboardCleanUp();
+                S_countDownLimit = 0; //Lägg till alla räknare som skall nollställas.
+                S_wrongGuessesInRow = 0;
+                S_left = 10 - S_incorrectGuesses;
                 restart = false;
                 LevelChoice();
 
                 break;
             case '3':
+                restart = true;
+                S_incorrectGuesses = 0;
+                gameUX.KeyboardCleanUp();
+                S_countDownLimit = 0; //Lägg till alla räknare som skall nollställas.
+                S_wrongGuessesInRow = 0;
+                S_left = 10 - S_incorrectGuesses;
+                S_windwidth = Console.WindowWidth / 2;
                 StartGame();
                 break;
             case '4':
@@ -505,8 +505,7 @@ public class GameLogic
     private void LevelChoice()
     {
         S_player = new Player("");
-        S_windHeight = Console.WindowHeight / 2;
-        S_windwidth = (Console.WindowWidth / 2);
+
         Console.Clear();
 
         S_player.AskForUsersName();
@@ -516,7 +515,7 @@ public class GameLogic
         gameUX.Centered("Depending on which mode you select you will be hanged if:");
         gameUX.Centered("You guess wrong 10 times.");
         gameUX.Centered("You guess wrong letter 5 consecutive times");
-        gameUX.Centered("The runs out");
+        gameUX.Centered("The time runs out");
         gameUX.Centered("Clues will display either directly or after 4 wrong guesses depending on mode.");
         Console.WriteLine();
         gameUX.Centered(@" ------------------------------------------------------------------ ");

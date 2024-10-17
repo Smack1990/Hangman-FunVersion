@@ -11,15 +11,14 @@ using System.Threading.Tasks.Sources;
 namespace Hangman_basic;
 public class GameUX
 {
-    public int CountdownTime { get; private set; }
+    
     private CancellationTokenSource _cancellationTokenSource;
-    private Thread countdownThread;
-    private bool countdownRunning;
     static PeriodicTimer secondTimer;
     public int Secs = 26;
     public int Millis = 1000; // Start from 1000 ms for 1 second
     public int CountdownLimit = 0;
     public int countdownTime = 10;
+
 
     public static char[] Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray(); // Keyboard for the game
     public void KeyboardCleanUp()
@@ -135,7 +134,6 @@ public class GameUX
         $"                          {incorrect}    InCorrect",
         $"                            {left} Guesses left",
         $"                            {wrongedGuessedInRow}/5 wrong guesses in a row",
-        $"                            {CountdownLimit}/3 Countdown limit",
         $"             --------------------------"
         };
 
@@ -207,9 +205,13 @@ public class GameUX
                 Millis = 1000; // Återställ millisekunder
             }
 
-            // Uppdatera nedräkningen
-            Console.SetCursorPosition(105, 8); // Justera positionen för timern
-            Console.Write($"Timer: {Secs.ToString("00")}:{Millis.ToString("000")}");
+            // Display the time in tenths of a second (e.g., "10:5" instead of "10:500")
+            int tenths = Millis / 100; // Convert milliseconds to tenths of a second
+
+            // Update countdown display
+            Console.SetCursorPosition(105, 8); // Adjust the position as needed
+            Console.Write($"Timer: {Secs.ToString("00")}:{tenths}");
+
 
             // Stoppa nedräkningen och kalla Hanged() om tiden är slut
             if (Secs <= 0)
@@ -217,21 +219,22 @@ public class GameUX
                 // Säkerställ att vi inte går under 0 sekunder
                 Secs = 0;
                 Millis = 0;
-
-                // Visa "Time's up!" meddelande och stoppa nedräkningen
-                Console.SetCursorPosition(50, Console.CursorTop);
-                Console.WriteLine("Time's up!");
                 gameLogic.IsGameOver = true;
+                Console.Clear();
+                // Visa "Time's up!" meddelande och stoppa nedräkningen
+                Console.SetCursorPosition(50, 3);
+                Console.WriteLine("Sorry but times up! Better luck next time.");
                 gameLogic.Hanged(); // Anropa Hanged() när tiden tar slut
                 break; // Bryt ut från while-loopen
             }
             if (GameLogic.S_wrongGuessesInRow == 5 && Secs < 0)
             {
+                gameLogic.IsGameOver = true;
+                Console.Clear();
                 token.ThrowIfCancellationRequested(); // Om timern har blivit avbruten
                 secondTimer?.Dispose(); // Avsluta timern
-                Console.SetCursorPosition(50, Console.CursorTop);
-                Console.WriteLine("You have been hanged due to too many wrong guesses!");
-                gameLogic.IsGameOver = true;
+                Console.SetCursorPosition(50, 3);
+                Console.WriteLine("You have been hanged due to too many wrong guesses in row!");
                 gameLogic.Hanged(); // Anropa Hanged() vid hängning
                 break;
 
