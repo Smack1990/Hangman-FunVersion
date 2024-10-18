@@ -141,50 +141,54 @@ public class GameLogic
                 gameUX.Centered($"Clue: {S_clue}");
             }
 
-
+            //Updatera askforletter pausa inmatningen om tiden tar slut. 
 
 
             Console.SetCursorPosition(0, S_windHeight); DisplayMaskedWord(); // Skriver ut ordet med maskade bokstäver
             gameUX.DisplayKeyboard();// skriver ut tagentbordslayouten enligt QWERTY
             PrintingHangman(S_incorrectGuesses);// hangmangubben skrivs ut vid fel bokstav
-            guessedLetter = AskForLetter();
-
-            if (S_player.GuessedLetters.Contains(guessedLetter)) //promtar om bokstaven redan är gissad
-                alreadyGuessed = $"You've already guessed:{guessedLetter}";
-            else
+            if (!IsGameOver) // Check if the game is still ongoing
             {
-                alreadyGuessed = string.Empty;
-                bool correct = CheckLetter(guessedLetter); //Checkar om bokstaven finns i ordet
-                if (correct)
-                {
+                guessedLetter = AskForLetter(); // Ask the user to guess a letter
 
-                    S_wrongGuessesInRow = 0;
+                if (S_player.GuessedLetters.Contains(guessedLetter)) // Check if the letter has already been guessed
+                {
+                    alreadyGuessed = $"You've already guessed: {guessedLetter}";
                 }
                 else
                 {
+                    alreadyGuessed = string.Empty; // Reset message
+                    bool correct = CheckLetter(guessedLetter); // Check if the letter is in the word
 
-                    S_incorrectGuesses++;
-                    PrintingHangman(S_incorrectGuesses);
-                    S_wrongGuessesInRow++;
-                    if (S_wrongGuessesInRow == 5)
+                    if (correct)
                     {
-                        cts.Cancel();
-                        IsGameOver = true;
-                        Hanged();
-                        break;
+                        S_wrongGuessesInRow = 0;
                     }
-                    else if (S_wrongGuessesInRow == 4)
+                    else
                     {
-                        //gameUX.StopCountdown();
-                        ShowWarning();
-                        //gameUX.StartCountdown(10);
+                        S_incorrectGuesses++;
+                        PrintingHangman(S_incorrectGuesses);
+                        S_wrongGuessesInRow++;
+
+                        if (S_wrongGuessesInRow == 5)
+                        {
+                            cts.Cancel();
+                            IsGameOver = true;
+                            Hanged();
+                            break;
+                        }
+                        else if (S_wrongGuessesInRow == 4)
+                        {
+                            ShowWarning();
+                        }
                     }
                 }
+            
 
 
-                //gameUX.StopCountdown();
-                //gameUX.StartCountdown(10);
-            }
+            //gameUX.StopCountdown();
+            //gameUX.StartCountdown(10);
+        }
 
             if (S_incorrectGuesses > 9) // Spelet förlorat
             {
@@ -196,27 +200,43 @@ public class GameLogic
                 Hanged();
                 break;
             }
-            if (S_correctWord == new string(S_letters))
-            {
+            //if (S_correctWord == new string(S_letters))
+            //{
 
-                cts.Cancel(); // Stop the timer when the game ends
+            //    cts.Cancel(); // Stop the timer when the game ends
 
-                GameWon();
+            //    GameWon();
 
-                break;
-            }
-
-
+            //    break;
+            //}
 
 
 
-        } while (!IsGameOver); // loop körs så länge det finns _ kvar i ordet
+
+
+        } while (S_correctWord == new string(S_letters)); // loop körs så länge det finns _ kvar i ordet
 
         cts.Cancel(); // Stop the timer when the game ends
-        GameWon();
+        if (S_correctWord == new string(S_letters))
+        {
+
+            GameWon();
+        }
+        // else
+        // {
+        //    RestartGame();
+        // }
+
 
     }// Game logics
 
+
+    private void ThanksForPlaying()
+    {
+        gameUX.Centered("Loading...");
+        gameUX.Centered($"Thanks for playing {S_player.PlayerName}");
+        GameWon();
+    }
     private static void ShowWarning()
     {
         Console.Clear();
@@ -248,7 +268,7 @@ public class GameLogic
         Console.ResetColor();
         EndGame();
         gameUX.Centered("Press any key to continue");
-        Console.ReadKey(true);
+        //Console.ReadKey(true);
         RestartGame();
     } // Spelet vunnet
 
@@ -292,6 +312,11 @@ public class GameLogic
 
         while (true) // Loop until a valid letter is entered
         {
+        if (gameUX.Secs <= 0)
+            {
+                break;
+
+            }
             Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(text);
@@ -319,6 +344,7 @@ public class GameLogic
             }
 
         }
+        return '\0';
 
     } // ask for input letter
     public static bool CheckLetter(char guessedLetter)

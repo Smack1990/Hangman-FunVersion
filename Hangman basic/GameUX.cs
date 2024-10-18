@@ -222,8 +222,9 @@ public class GameUX
                 gameLogic.IsGameOver = true;
                 Console.Clear();
                 // Visa "Time's up!" meddelande och stoppa nedräkningen
-                Console.SetCursorPosition(50, 3);
+                Console.SetCursorPosition(2, 3);
                 Console.WriteLine("Sorry but times up! Better luck next time.");
+                Console.WriteLine();
                 gameLogic.Hanged(); // Anropa Hanged() när tiden tar slut
                 break; // Bryt ut från while-loopen
             }
