@@ -125,6 +125,7 @@ public class GameUX
 
     public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)
     {
+        left = 10 - GameLogic.S_incorrectGuesses;
 
         string[] lines = new string[]
         {
