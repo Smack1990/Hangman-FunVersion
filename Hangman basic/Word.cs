@@ -149,14 +149,14 @@ public class Word
         ReadJson();
         ReadDictionary();
     }
-    private void WriteDictionary()
+    private void WriteDictionary() // Writes to dictionary
     {
         var filePath = GetFilePath(JsonClues);
         string updatedJson = JsonSerializer.Serialize(WordClue);
         File.WriteAllText(filePath, updatedJson);
 
     }
-    private void ReadDictionary()
+    private void ReadDictionary() //reads fron dictionary or fall back on default values if file doesnt exist.
     {
         var filePath = GetFilePath(JsonClues);
         if (File.Exists(filePath))
