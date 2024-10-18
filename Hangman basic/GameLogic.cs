@@ -240,6 +240,13 @@ public class GameLogic
                         }
                     }
                 }
+                if (WrongGuessesInRow == 5)
+                {
+                    cts.Cancel();
+                    IsGameOver = true;
+                    Hanged();
+                    break;
+                }
 
                 if ((S_correctWord == new string(S_letters)))
                 {
