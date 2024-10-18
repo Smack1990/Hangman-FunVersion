@@ -14,20 +14,19 @@ public class GameUX
 
     private CancellationTokenSource _cancellationTokenSource;
     static PeriodicTimer secondTimer;
-    public int Secs = 26;
-    public int Millis = 1000; // Start from 1000 ms for 1 second
-    public int CountdownLimit = 0;
-    public int countdownTime = 10;
+    public int Secs = 10;
+    public int Millis = 1000; 
+    public int CountdownLimit = 10;
 
 
     public static char[] Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray(); // Keyboard for the game
-    public void KeyboardCleanUp()
+    public void KeyboardCleanUp() //Method to clean up the keyboard after each game
     {
         Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray();
 
-    } //Method to clean up the keyboard after each game
-
-    public void HangmanLogo()
+    }
+    #region Logos, Graphics and Score
+    public void HangmanLogo()// Logo for the game
     {
         string[] logoLines = new string[]
         {
@@ -53,7 +52,7 @@ public class GameUX
             Console.WriteLine(line);
         }
         Console.ResetColor();
-    } // Logo for the game
+    } 
     public void HangmanLogoTop() // logo hangman for the game
     {
         string[] linesHangman = new string[]
@@ -89,11 +88,11 @@ public class GameUX
         }
     }
 
-    public void TheRope()
+    public void TheRope() //Warning logo with th rope
     {
         string[] lines = new string[]
         {
-                    @"     ___________.._______",
+        @"     ___________.._______",
         @"    | .__________))______|",
         @"    | | / /      ||",
         @"    | |/ /       || ",
@@ -123,7 +122,7 @@ public class GameUX
         }
     }
 
-    public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)
+    public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)// Method to display the score in the console
     {
         left = 10 - GameLogic.S_incorrectGuesses;
 
@@ -141,16 +140,17 @@ public class GameUX
         // For each line, calculate the rightmost position and print it
         foreach (var line in lines)
         {
-            int x = 7;
+    
             Console.ForegroundColor = ConsoleColor.Red;
             int rightmostPosition = Console.WindowWidth - line.Length;
             Console.SetCursorPosition(rightmostPosition, Console.CursorTop);
-            x++;
+    
             Console.WriteLine(line);
         }
         Console.ResetColor();
-    } // Method to display the score in the console
-    public void DisplayKeyboard()
+    }
+   
+    public void DisplayKeyboard()// Method to display the keyboard in the console
     {
         foreach (char key in Keyboard)
         {
@@ -166,15 +166,8 @@ public class GameUX
         }
         Console.WriteLine();
         Console.ResetColor();
-    }  // Method to display the keyboard in the console
-
-    private void CenteredCursor()
-    {
-        int centerPosition = (Console.WindowWidth / 2) - (Keyboard.Length / 4);
-        Console.SetCursorPosition(centerPosition, Console.CursorTop);
-    } // Method to center the cursor in the console
-
-    public void UpdateKeyboard(char guessedLetter)
+    }
+    public void UpdateKeyboard(char guessedLetter)// Method to update the keyboard after a letter has been guessed
     {
         guessedLetter = char.ToUpper(guessedLetter);
         for (int i = 0; i < Keyboard.Length; i++)
@@ -184,7 +177,15 @@ public class GameUX
                 Keyboard[i] = ' ';  // Replace guessed letter with a space
             }
         }
-    } // Method to update the keyboard after a letter has been guessed
+    }
+    #endregion 
+    private void CenteredCursor() // Method to center the cursor in the console
+    {
+        int centerPosition = (Console.WindowWidth / 2) - (Keyboard.Length / 4);
+        Console.SetCursorPosition(centerPosition, Console.CursorTop);
+    }
+
+
     public void Centered(string text) //Method for centuring the text in the console. Not using padLeft or padRigt to be able tu use the whole console window if needed.
     {
         int width = Console.WindowWidth / 2 - text.Length / 2;
@@ -199,27 +200,26 @@ public class GameUX
         int windW = Console.WindowWidth / 2 -text.Length / 2;
         int windW2 = Console.WindowWidth / 2 -text2.Length / 2;
         GameLogic gameLogic = new GameLogic();
-        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100)); // Timer ticks every 100ms
+        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100)); 
         while (await secondTimer.WaitForNextTickAsync(token))
         {
-            Millis -= 100; // Decrement milliseconds
+            Millis -= 100;
 
             if (Millis <= 0)
             {
-                Secs--; // Decrement seconds
-                Millis = 1000; // Reset milliseconds
+                Secs--; 
+                Millis = 1000; 
             }
 
             // Update the timer display
-            int tenths = Millis / 100; // Convert to tenths
+            int tenths = Millis / 100; 
             Console.SetCursorPosition(105, 8);
             Console.Write($"Timer: {Secs.ToString("00")}:{tenths}");
 
             // Check if time has expired
             if (Secs <= 0)
             {
-                Secs = 0; // Ensure seconds do not go negative
-                          //gameUX.StopTimer(); // Optionally stop the timer
+                Secs = 0; 
 
                 Console.Clear();
                 Console.SetCursorPosition(windW, 3);
@@ -229,26 +229,19 @@ public class GameUX
                 HangmanLogo();
                 Console.SetCursorPosition(windW2, Console.CursorTop); Console.WriteLine(text2);
 
-                //gameLogic.Hanged(); // Call Hanged method
-                break; // Exit the loop
+                
+                break; 
             }
 
 
 
             if (token.IsCancellationRequested)
             {
-                break; // Exit the timer if cancellation is requested
+                break; 
             }
         }
     }
-    public void ResetTimer()
-    {
-        _cancellationTokenSource?.Cancel(); // Cancel the previous countdown
-        Secs = CountdownLimit; // Reset seconds to the original countdown time
-        Millis = 1000; // Reset milliseconds to start from 1000ms
-        _cancellationTokenSource = new CancellationTokenSource(); // Reset cancellation token source
-        _ = StartTimer(_cancellationTokenSource.Token); // Restart the timer
-    }
+
 
 
 }

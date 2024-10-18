@@ -109,14 +109,14 @@ public class Word
         {
             WordClue.Add(revisedInput, revisedClue);
             WriteDictionary();
-            string text = "Word and clue was added succesfully"; //adda färg
+            string text = "Word and clue was added succesfully"; 
             Console.SetCursorPosition(S_windwidth - text.Length / 2, Console.CursorTop);
 
             Console.WriteLine(text); Thread.Sleep(2000);
         }
         else
         {
-            string text = "The word already exist in this dictionary"; // adda färg
+            string text = "The word already exist in this dictionary"; 
             Console.SetCursorPosition(S_windwidth - text.Length / 2, Console.CursorTop);
             Console.WriteLine(text); Thread.Sleep(2000);
         }
@@ -263,21 +263,18 @@ public class Word
         }
     }
 
-    public void ReadJson()
+    public void ReadJson()// Reads Jsonfile
     {
         string filePath = GetFilePath(JsonWords);
         if (File.Exists(filePath))
         {
             string json = File.ReadAllText(filePath);
             WordList = JsonSerializer.Deserialize<List<string>>(json)!;
-            //foreach (var word in WordList) //Kontrollera om listan finns eller ej. 
-            //{
-            //    Console.WriteLine(word);
-            //}
+         
         }
         else
         {
             WordList = WordClue.Keys.ToList();
         }
-    } // Reads Jsonfile
+    } 
 }
