@@ -11,7 +11,7 @@ using System.Threading.Tasks.Sources;
 namespace Hangman_basic;
 public class GameUX
 {
-    
+
     private CancellationTokenSource _cancellationTokenSource;
     static PeriodicTimer secondTimer;
     public int Secs = 26;
@@ -125,7 +125,7 @@ public class GameUX
 
     public void DisplayScore(int correct, int incorrect, int wrongedGuessedInRow, int left, Player player)
     {
-        
+
         string[] lines = new string[]
         {
         $"              Player: {player.PlayerName}",
@@ -193,67 +193,50 @@ public class GameUX
 
     public async Task StartTimer(CancellationToken token)
     {
-        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100)); // Timer ticks every 100ms
+        string text = "Sorry but time's up! Better luck next time.";
+        string text2 = "Press any key to continue.";
+        int windW = Console.WindowWidth / 2 -text.Length / 2;
+        int windW2 = Console.WindowWidth / 2 -text2.Length / 2;
         GameLogic gameLogic = new GameLogic();
+        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100)); // Timer ticks every 100ms
         while (await secondTimer.WaitForNextTickAsync(token))
         {
-            Millis -= 100; // Minska millisekunderna med 100ms vid varje tick
+            Millis -= 100; // Decrement milliseconds
 
             if (Millis <= 0)
             {
-                Secs--; // När 1000ms har gått, minska sekunderna
-                Millis = 1000; // Återställ millisekunder
+                Secs--; // Decrement seconds
+                Millis = 1000; // Reset milliseconds
             }
 
-            // Display the time in tenths of a second (e.g., "10:5" instead of "10:500")
-            int tenths = Millis / 100; // Convert milliseconds to tenths of a second
-
-            // Update countdown display
-            Console.SetCursorPosition(105, 8); // Adjust the position as needed
+            // Update the timer display
+            int tenths = Millis / 100; // Convert to tenths
+            Console.SetCursorPosition(105, 8);
             Console.Write($"Timer: {Secs.ToString("00")}:{tenths}");
 
-
-            // Stoppa nedräkningen och kalla Hanged() om tiden är slut
+            // Check if time has expired
             if (Secs <= 0)
             {
-                // Säkerställ att vi inte går under 0 sekunder
-                Secs = 0;
-                Millis = 0;
-                gameLogic.IsGameOver = true;
-                Console.Clear();
-                // Visa "Time's up!" meddelande och stoppa nedräkningen
-                Console.SetCursorPosition(2, 3);
-                Console.WriteLine("Sorry but times up! Better luck next time.");
-                Console.WriteLine();
-                gameLogic.Hanged(); // Anropa Hanged() när tiden tar slut
-                break; // Bryt ut från while-loopen
-            }
-            if (GameLogic.S_wrongGuessesInRow == 5 && Secs < 0)
-            {
-                gameLogic.IsGameOver = true;
-                Console.Clear();
-                token.ThrowIfCancellationRequested(); // Om timern har blivit avbruten
-                secondTimer?.Dispose(); // Avsluta timern
-                Console.SetCursorPosition(50, 3);
-                Console.WriteLine("You have been hanged due to too many wrong guesses in row!");
-                gameLogic.Hanged(); // Anropa Hanged() vid hängning
-                break;
+                Secs = 0; // Ensure seconds do not go negative
+                          //gameUX.StopTimer(); // Optionally stop the timer
 
-            }
-            if (GameLogic.S_incorrectGuesses > 9)
-            {
-                token.ThrowIfCancellationRequested(); // Check for cancellation
-                secondTimer.Dispose(); // Dispose of the timer
-                gameLogic.IsGameOver = true; // Set game over flag
-                gameLogic.Hanged(); // Call Hanged
-                break;
+                Console.Clear();
+                Console.SetCursorPosition(windW, 3);
+                Console.WriteLine(text);
+                gameLogic.IsGameOver = true;
+                HangmanLogoTop();
+                HangmanLogo();
+                Console.SetCursorPosition(windW2, Console.CursorTop); Console.WriteLine(text2);
+
+                //gameLogic.Hanged(); // Call Hanged method
+                break; // Exit the loop
             }
 
 
 
             if (token.IsCancellationRequested)
             {
-                break; // Avsluta timern om den har blivit avbruten
+                break; // Exit the timer if cancellation is requested
             }
         }
     }
