@@ -173,12 +173,12 @@ public class GameLogic
 
         if (IsModerate)
         {
-            S_gameUX.Secs = 60;
+            S_gameUX.Secs = 30;
             _ = S_gameUX.StartTimer(cts.Token);
         }
         else if (IsHard)
         {
-            S_gameUX.Secs = 30;
+            S_gameUX.Secs = 60;
             _ = S_gameUX.StartTimer(cts.Token);
         }
 
