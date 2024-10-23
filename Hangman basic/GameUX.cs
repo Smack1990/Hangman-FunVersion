@@ -16,7 +16,7 @@ public class GameUX
     private CancellationTokenSource _cancellationTokenSource;
     static PeriodicTimer secondTimer;
     public int Secs = 10;
-    public int Millis = 1000; 
+    public int Millis = 1000;
     public int CountdownLimit = 10;
 
 
@@ -24,7 +24,12 @@ public class GameUX
     public static char[] KeyboardEasy = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n     ".ToCharArray(); // Keyboard for the game
     public void KeyboardCleanUp() //Method to clean up the keyboard after each game
     {
+
+
+        // Reset both keyboards to their initial state
         Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray();
+        KeyboardEasy = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n     ".ToCharArray();
+
 
     }
     #region Logos, Graphics and Score
@@ -54,7 +59,7 @@ public class GameUX
             Console.WriteLine(line);
         }
         Console.ResetColor();
-    } 
+    }
     public void HangmanLogoTop() // logo hangman for the game
     {
         string[] linesHangman = new string[]
@@ -142,11 +147,11 @@ public class GameUX
         // For each line, calculate the rightmost position and print it
         foreach (var line in lines)
         {
-    
+
             Console.ForegroundColor = ConsoleColor.Red;
             int rightmostPosition = Console.WindowWidth - line.Length;
             Console.SetCursorPosition(rightmostPosition, Console.CursorTop);
-    
+
             Console.WriteLine(line);
         }
         Console.ResetColor();
@@ -155,7 +160,6 @@ public class GameUX
     public void DisplayKeyboard() // Method to display the keyboard in the console
     {
         
-        // Determine which keyboard to use based on game mode
         char[] currentKeyboard = GameLogic.S_isHard ? Keyboard : KeyboardEasy;
 
         foreach (char key in currentKeyboard)
@@ -163,29 +167,39 @@ public class GameUX
             if (key == '\n')
             {
                 Console.WriteLine();
-                CenteredCursor(); // Center the cursor for new lines
+                CenteredCursor();
             }
             else if (key == '_')
             {
-                Console.Write("[Space] "); // Display for space
+                Console.Write("[Space] "); 
             }
             else
             {
-                Console.Write(key + " "); // Display for other keys
+                Console.Write(key + " "); 
             }
         }
-        Console.WriteLine(); // New line after displaying the keyboard
-        Console.ResetColor(); // Reset console color
+        Console.WriteLine();
+        Console.ResetColor(); 
     }
 
-    public void UpdateKeyboard(char guessedLetter)// Method to update the keyboard after a letter has been guessed
+    public void UpdateKeyboard(char guessedLetter) // Method to update the keyboard after a letter has been guessed
     {
         guessedLetter = char.ToUpper(guessedLetter);
+
+        
         for (int i = 0; i < Keyboard.Length; i++)
         {
             if (Keyboard[i] == guessedLetter)
             {
-                Keyboard[i] = ' ';  // Replace guessed letter with a space
+                Keyboard[i] = ' ';  
+            }
+        }
+
+        for (int i = 0; i < KeyboardEasy.Length; i++)
+        {
+            if (KeyboardEasy[i] == guessedLetter)
+            {
+                KeyboardEasy[i] = ' '; 
             }
         }
     }
@@ -208,29 +222,29 @@ public class GameUX
     {
         string text = "Sorry but time's up! Better luck next time.";
         string text2 = "Press any key to continue.";
-        int windW = Console.WindowWidth / 2 -text.Length / 2;
-        int windW2 = Console.WindowWidth / 2 -text2.Length / 2;
+        int windW = Console.WindowWidth / 2 - text.Length / 2;
+        int windW2 = Console.WindowWidth / 2 - text2.Length / 2;
         GameLogic gameLogic = new GameLogic();
-        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100)); 
+        secondTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
         while (await secondTimer.WaitForNextTickAsync(token))
         {
             Millis -= 100;
 
             if (Millis <= 0)
             {
-                Secs--; 
-                Millis = 1000; 
+                Secs--;
+                Millis = 1000;
             }
 
             // Update the timer display
-            int tenths = Millis / 100; 
+            int tenths = Millis / 100;
             Console.SetCursorPosition(105, 8);
             Console.Write($"Timer: {Secs.ToString("00")}:{tenths}");
 
             // Check if time has expired
             if (Secs <= 0)
             {
-                Secs = 0; 
+                Secs = 0;
 
                 Console.Clear();
                 Console.SetCursorPosition(windW, 3);
@@ -240,15 +254,15 @@ public class GameUX
                 HangmanLogo();
                 Console.SetCursorPosition(windW2, Console.CursorTop); Console.WriteLine(text2);
 
-                
-                break; 
+
+                break;
             }
 
 
 
             if (token.IsCancellationRequested)
             {
-                break; 
+                break;
             }
         }
     }
