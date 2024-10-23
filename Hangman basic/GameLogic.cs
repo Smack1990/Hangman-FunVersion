@@ -89,7 +89,7 @@ public class GameLogic
         S_gameUX.Centered("In this game you will try to guess the correct word,");
         S_gameUX.Centered("Depending on which mode you select you will be hanged if:");
         S_gameUX.Centered("You guess wrong 10 times");
-        S_gameUX.Centered("You guess wrong letter 5 consecutive times");
+        S_gameUX.Centered("You guess wrong letter 5 times in a row");
         S_gameUX.Centered("The time runs out");
         S_gameUX.Centered("Clues will display either directly or after 4 wrong guesses depending on mode.");
         Console.WriteLine();
@@ -434,7 +434,7 @@ public class GameLogic
         Thread.Sleep(2500);
     }
     #endregion
-    #region AfterGameLogic
+    #region After GameLogic
     private void GameWon() //gameWon if correct word is guessed
     {
         Console.Clear();
