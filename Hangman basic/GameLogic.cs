@@ -84,7 +84,7 @@ public class GameLogic
         Console.Clear();
 
         S_player.AskForUsersName();
-        Console.SetCursorPosition(S_windwidth, S_windHeight - 10);
+        Console.SetCursorPosition(S_windwidth, S_windHeight - 11);
         S_gameUX.Centered($"Welcome {S_player.PlayerName}\n");
         S_gameUX.Centered("In this game you will try to guess the correct word,");
         S_gameUX.Centered("Depending on which mode you select you will be hanged if:");
