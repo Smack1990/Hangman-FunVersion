@@ -146,8 +146,8 @@ public class Word
     public Word() //Constructor that reads creates WordsList list and reads from jsonfile at the beginning of the game. 
     {
         WordList = new List<string>();
-        ReadJson();
         ReadDictionary();
+        ReadJson();
     }
     private void WriteDictionary() // Writes to dictionary
     {

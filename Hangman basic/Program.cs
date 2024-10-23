@@ -14,9 +14,57 @@ namespace Hangman
  
         static void Main(string[] args)
         {
+           
+            
+            
             GameLogic gameLogic = new GameLogic();
-            GameUX gameUX = new GameUX();   
-            gameLogic.StartGame();
+            GameUX gameUX = new GameUX();
+            try
+            {
+                gameLogic.StartGame(); 
+            }
+            catch (InvalidOperationException ex) // Catch specific exception
+            {
+                LogError(ex);
+                Console.WriteLine("An error occurred while starting the game: " + ex.Message);
+                Console.WriteLine("Please try again later.");
+            }
+            catch (Exception ex) 
+            {
+                LogError(ex);
+                Console.WriteLine("Oops! Something went wrong.");
+                Console.WriteLine("Error details: " + ex.Message);
+                Console.WriteLine("Please contact support or try restarting the game.");
+            }
+            finally
+            {
+                Console.WriteLine("Thank you for playing Hangman!");
+                Console.ReadKey();
+            }
+
+        }
+
+        private static void LogError(Exception ex)
+        {
+            string filepath = "errorlog.txt";
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filepath, true))
+                {
+                    writer.WriteLine("Error occurred at: " + DateTime.Now);
+                    writer.WriteLine("Error message: " + ex.Message);
+                    writer.WriteLine("Stack trace: " + ex.StackTrace);
+                    writer.WriteLine(new string('_', 50));
+                }
+            }
+            catch (IOException ioEx)
+            {
+                Console.WriteLine("An error occurred while logging the error: " + ioEx.Message);
+            }
+            catch (Exception logEx)
+            {
+                Console.WriteLine("An unexpexted error occured while logging: " + logEx.Message);               
+            }
         }
 
 
@@ -40,4 +88,4 @@ namespace Hangman
  * 5.Use the debugger more often.
  * 6.Ensure your code compiles at all time.  
  * Do better:
- * Exepction handling.(None in the program)*/
+ * ***UPDATE: Logging of exceptions implemented:*** Exepction handling.)*/

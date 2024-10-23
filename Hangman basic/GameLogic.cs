@@ -42,7 +42,7 @@ public class GameLogic
             Console.Clear();
             S_gameUX.HangmanLogoTop();
             S_gameUX.HangmanLogo();
-            S_gameUX.Centered("Press:  1:[Play Game] | 2:[Add words and clues to Moderate mode] | 3:[Add words to Hard mode]  ");
+            S_gameUX.Centered("Press:  1:[Play Game] | 2:[Add words and clues [Easey/Moderate] | 3:[Add words to Hard mode]  ");
             upperChar = char.ToUpper(Console.ReadKey(true).KeyChar);
         } while (upperChar != '1' && upperChar != '2' && upperChar != '3');
 
@@ -55,7 +55,7 @@ public class GameLogic
                 Console.Clear();
                 S_gameUX.HangmanLogo();
                 Console.SetCursorPosition(S_windwidth, S_windHeight - 1);
-                S_gameUX.Centered("Enter a word to the dictionary");
+                S_gameUX.Centered("Enter a word to the words list");
                 Console.SetCursorPosition(S_windwidth - 10, Console.CursorTop);
                 S_wordList.WriteJson(Console.ReadLine());
                 Console.Clear();
@@ -88,7 +88,7 @@ public class GameLogic
         S_gameUX.Centered($"Welcome {S_player.PlayerName}\n");
         S_gameUX.Centered("In this game you will try to guess the correct word,");
         S_gameUX.Centered("Depending on which mode you select you will be hanged if:");
-        S_gameUX.Centered("You guess wrong 10 times.");
+        S_gameUX.Centered("You guess wrong 10 times");
         S_gameUX.Centered("You guess wrong letter 5 consecutive times");
         S_gameUX.Centered("The time runs out");
         S_gameUX.Centered("Clues will display either directly or after 4 wrong guesses depending on mode.");
@@ -98,7 +98,7 @@ public class GameLogic
         S_gameUX.Centered(@"|-------------------------|--------------|----------|---------------|");
         S_gameUX.Centered(@"| Random words |     X    |       X      |     X    |       Why     |");
         S_gameUX.Centered(@"| Clues        |     X    |       X      |          |      would    |");
-        S_gameUX.Centered(@"| Timer 30s    |          |       X      |          |       you     |");
+        S_gameUX.Centered(@"| Timer 40s    |          |       X      |          |       you     |");
         S_gameUX.Centered(@"| Timer 60s    |          |              |     X    |      Quit?    |");
         S_gameUX.Centered(@" ------------------------------------------------------------------- ");
 
@@ -173,7 +173,7 @@ public class GameLogic
 
         if (IsModerate)
         {
-            S_gameUX.Secs = 30;
+            S_gameUX.Secs = 40;
             _ = S_gameUX.StartTimer(cts.Token);
         }
         else if (IsHard)
@@ -400,9 +400,9 @@ public class GameLogic
         // Determine elapsed time
         int elapsedTime = 0;
         if (IsModerate)
-            elapsedTime = 60 - S_gameUX.Secs;
+            elapsedTime = 40 - S_gameUX.Secs;
         else if (IsHard)
-            elapsedTime = 30 - S_gameUX.Secs;
+            elapsedTime = 60 - S_gameUX.Secs;
         S_gameUX.Centered($"Total amount of guesses: {S_player.GuessedLetters.Count}");
         S_gameUX.Centered($"You made: {S_incorrectGuesses} incorrect guesses");
         if (IsModerate || IsHard)
