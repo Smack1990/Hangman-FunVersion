@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hangman_basic;
 public class GameUX
@@ -20,6 +21,7 @@ public class GameUX
 
 
     public static char[] Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray(); // Keyboard for the game
+    public static char[] KeyboardEasy = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n     ".ToCharArray(); // Keyboard for the game
     public void KeyboardCleanUp() //Method to clean up the keyboard after each game
     {
         Keyboard = "\nQWERTYUIOPÅ\nASDFGHJKLÖÄ\n  ZXCVBNM\n   _  ".ToCharArray();
@@ -149,24 +151,33 @@ public class GameUX
         }
         Console.ResetColor();
     }
-   
-    public void DisplayKeyboard()// Method to display the keyboard in the console
+
+    public void DisplayKeyboard() // Method to display the keyboard in the console
     {
-        foreach (char key in Keyboard)
+        
+        // Determine which keyboard to use based on game mode
+        char[] currentKeyboard = GameLogic.S_isHard ? Keyboard : KeyboardEasy;
+
+        foreach (char key in currentKeyboard)
         {
             if (key == '\n')
             {
                 Console.WriteLine();
-                CenteredCursor();
+                CenteredCursor(); // Center the cursor for new lines
             }
             else if (key == '_')
-                Console.Write("[Space]");
+            {
+                Console.Write("[Space] "); // Display for space
+            }
             else
-                Console.Write(key + " ");
+            {
+                Console.Write(key + " "); // Display for other keys
+            }
         }
-        Console.WriteLine();
-        Console.ResetColor();
+        Console.WriteLine(); // New line after displaying the keyboard
+        Console.ResetColor(); // Reset console color
     }
+
     public void UpdateKeyboard(char guessedLetter)// Method to update the keyboard after a letter has been guessed
     {
         guessedLetter = char.ToUpper(guessedLetter);
