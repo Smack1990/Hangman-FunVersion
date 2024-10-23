@@ -271,7 +271,7 @@ public class GameLogic
         RestartGame(); //Continue after gameloop is break
     }
     #endregion
-    #region During gameLogic
+    #region During GameLogic
     private void DisplayMaskedWord() //Positioning and toString of the masked word
     {
 
