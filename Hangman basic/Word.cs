@@ -210,7 +210,14 @@ public class Word
                 {"Kryptografi", "Hemlig skrivkonst"},
                 {"Astrologi", "Sjärnor och liv"},
                 {"Mikroskop", "Förstorar små objekt"},
-                {"Paradox", "Motsägelsefull utsaga"}
+                {"Paradox", "Motsägelsefull utsaga"},
+                { "Manchester United", "Fotbollslag" },
+                { "Real Madrid", "Fotbollslag" },
+                { "FC Barcelona ", "Fotbollslag" },
+                { "Juventus", "Fotbollslag" },
+                { "Liverpool", "Fotbollslag" },
+                { "Manchester City", "Fotbollslag" },
+  
             };
 
 
