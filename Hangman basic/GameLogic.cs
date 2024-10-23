@@ -164,6 +164,7 @@ public class GameLogic
     }
     private void PlayGame() //Play the gameLogic
     {
+        Console.CursorVisible = false; 
         IsGameOver = false;
         S_incorrectGuesses = 0;
         S_player.GuessedLetters.Clear();
@@ -241,6 +242,8 @@ public class GameLogic
                         }
                     }
                 }
+
+
                 if (WrongGuessesInRow == 5)
                 {
                     cts.Cancel();

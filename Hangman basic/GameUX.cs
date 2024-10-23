@@ -220,6 +220,7 @@ public class GameUX
 
     public async Task StartTimer(CancellationToken token)
     {
+        Console.CursorVisible = false;
         string text = "Sorry but time's up! Better luck next time.";
         string text2 = "Press any key to continue.";
         int windW = Console.WindowWidth / 2 - text.Length / 2;
@@ -249,7 +250,9 @@ public class GameUX
                 Console.Clear();
                 Console.SetCursorPosition(windW, 3);
                 Console.WriteLine(text);
+
                 gameLogic.IsGameOver = true;
+                
                 HangmanLogoTop();
                 HangmanLogo();
                 Console.SetCursorPosition(windW2, Console.CursorTop); Console.WriteLine(text2);
