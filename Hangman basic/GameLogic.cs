@@ -294,7 +294,7 @@ public class GameLogic
         {
             if (S_gameUX.Secs <= 0)
                 break;
-            if (S_isEasy || S_isModerate)
+            if (S_isEasy || S_isModerate) //ful-lösning. Not dry
             {
                 Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -323,9 +323,9 @@ public class GameLogic
                 }
 
             }
-            if (S_isHard)
+            if (S_isHard) //ful-lösning Not dry
             {
-                if (S_gameUX.Secs <= 0)
+                if (S_gameUX.Secs <= 0) 
                     break;
 
                 Console.SetCursorPosition(S_windwidth, S_windHeight + 6);
@@ -366,7 +366,7 @@ public class GameLogic
     public static bool CheckLetter(char guessedLetter) //Check if letter is correct
     {
         bool found = false;
-        if (S_isEasy || S_isModerate)
+        if (S_isEasy || S_isModerate) // ful-lösning. Not dry
         {
             guessedLetter = char.ToUpper(guessedLetter);
         if (S_player!.GuessedLetters.Contains(guessedLetter))
@@ -391,7 +391,7 @@ public class GameLogic
         return found;
 
         }
-        if (S_isHard)
+        if (S_isHard) //Ful-Lösning not dry
         {
             guessedLetter = char.ToUpper(guessedLetter);
             if (guessedLetter == ' ')

@@ -14,16 +14,13 @@ namespace Hangman
  
         static void Main(string[] args)
         {
-           
-            
-            
             GameLogic gameLogic = new GameLogic();
             GameUX gameUX = new GameUX();
             try
             {
                 gameLogic.StartGame(); 
             }
-            catch (InvalidOperationException ex) // Catch specific exception
+            catch (InvalidOperationException ex) 
             {
                 LogError(ex);
                 Console.WriteLine("An error occurred while starting the game: " + ex.Message);
