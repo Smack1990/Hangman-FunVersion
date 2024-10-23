@@ -85,4 +85,5 @@ namespace Hangman
  * 5.Use the debugger more often.
  * 6.Ensure your code compiles at all time.  
  * Do better:
+ * Dry code **DONT REPEAT YOURSELF**
  * ***UPDATE: Logging of exceptions implemented:*** Exepction handling.)*/
